@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epilepsy-prediction
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: epilepsy-prediction
+  template:
+    metadata:
+      labels:
+        app: epilepsy-prediction
+    spec:
+      containers:
+      - name: epilepsy-prediction
+        image: fberton98/epilepsy_prediction:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: epilepsy-prediction-service
+spec:
+  selector:
+    app: epilepsy-prediction
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
