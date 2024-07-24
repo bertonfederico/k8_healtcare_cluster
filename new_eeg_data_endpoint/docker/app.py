@@ -6,7 +6,7 @@ app = Flask(__name__)
 prediction_url = 'https://prediction_service/predict'
 saving_url = 'https://db-queries-app-service/eeg_chunks/add' 
 
-@app.route('/new_eeg_data_endpoint', methods=['POST'])
+@app.route('/', methods=['POST'])
 def new_eeg_data_endpoint():
     fk_user = request.get_json()['fk_user']
     eeg_data = request.get_json()['eeg_data']
