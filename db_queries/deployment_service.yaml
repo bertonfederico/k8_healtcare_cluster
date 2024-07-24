@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-queries-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-queries-app
+  template:
+    metadata:
+      labels:
+        app: db-queries-app
+    spec:
+      containers:
+      - name: db-queries-app
+        image: fberton98/db_saving:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-root-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-queries-app-service
+spec:
+  selector:
+    app: db-queries-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
