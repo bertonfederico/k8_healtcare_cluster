@@ -1,19 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db-queries-app
+  name: db-queries-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: db-queries-app
+      app: eeg-app
+      component: db-queries
   template:
     metadata:
       labels:
-        app: db-queries-app
+        app: eeg-app
+        component: db-queries
     spec:
       containers:
-      - name: db-queries-app
+      - name: db-queries
         image: fberton98/db_saving:latest
         ports:
         - containerPort: 5000
@@ -28,9 +30,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: db-queries-app-service
+  labels:
+    app: eeg-app
+    component: db-queries
 spec:
   selector:
-    app: db-queries-app
+    app: eeg-app
+    component: db-queries
   ports:
     - protocol: TCP
       port: 80

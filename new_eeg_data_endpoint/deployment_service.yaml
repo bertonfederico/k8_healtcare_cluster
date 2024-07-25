@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: new-eeg-data-endpoint
+  name: new-eeg-data-endpoint-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: new-eeg-data-endpoint
+      app: eeg-app
+      component: new-eeg-data-endpoint
   template:
     metadata:
       labels:
-        app: new-eeg-data-endpoint
+        app: eeg-app
+        component: new-eeg-data-endpoint
     spec:
       containers:
       - name: new-eeg-data-endpoint
@@ -22,9 +24,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: new-eeg-data-endpoint-service
+  labels:
+    app: eeg-app
+    component: new-eeg-data-endpoint
 spec:
   selector:
-    app: new-eeg-data-endpoint
+    app: eeg-app
+    component: new-eeg-data-endpoint
   ports:
     - protocol: TCP
       port: 80

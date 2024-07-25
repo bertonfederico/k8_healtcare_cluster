@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: epilepsy-prediction
+  name: epilepsy-prediction-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: epilepsy-prediction
+      app: eeg-app
+      component: epilepsy-prediction
   template:
     metadata:
       labels:
-        app: epilepsy-prediction
+        app: eeg-app
+        component: epilepsy-prediction
     spec:
       containers:
       - name: epilepsy-prediction
@@ -22,9 +24,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: epilepsy-prediction-service
+  labels:
+    app: eeg-app
+    component: epilepsy-prediction
 spec:
   selector:
-    app: epilepsy-prediction
+    app: eeg-app
+    component: epilepsy-prediction
   ports:
     - protocol: TCP
       port: 80
