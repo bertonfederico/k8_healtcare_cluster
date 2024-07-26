@@ -23,9 +23,8 @@ def new_eeg_data_endpoint():
     saving_payload = {
         'fk_user': fk_user,
         'eeg_data': eeg_data,
-        'epilepsy_prediction_probability': prediction_response.json(),
+        'epilepsy_prediction_probability': prediction_response.json()["response"],
         'register_timestamp': register_timestamp
-
     }
     saving_response = requests.post(saving_url, json=saving_payload)
     if saving_response.status_code != 201:
