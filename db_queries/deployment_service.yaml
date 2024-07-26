@@ -25,11 +25,6 @@ spec:
             secretKeyRef:
               name: mysql-secret
               key: mysql-root-password
-        resources:
-          limits: # max quantity of resources that container can use, otherwise --> throttled
-            cpu: 400m
-          requests: # guaranteed resources for this container
-            cpu: 200m
 ---
 apiVersion: v1
 kind: Service
@@ -47,22 +42,3 @@ spec:
       port: 80
       targetPort: 5000
   type: LoadBalancer
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: db-queries-hpa
-spec:
-  minReplicas: 1
-  maxReplicas: 10
-  metrics:
-  - resource:
-      name: cpu
-      target:
-        averageUtilization: 50    # target: 50% use of CPU by POD
-        type: Utilization
-    type: Resource
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: db-queries-deployment
