@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healt-center-web-page-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eeg-app
+      component: healt-center-web-page
+  template:
+    metadata:
+      labels:
+        app: eeg-app
+        component: healt-center-web-page
+    spec:
+      containers:
+      - name: healt_center_web_page
+        image: fberton98/healt_center_web_page:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          limits: # max quantity of resources that container can use, otherwise --> throttled
+            cpu: 400m
+          requests: # guaranteed resources for this container
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: healt-center-web-page-service
+  labels:
+    app: eeg-app
+    component: healt-center-web-page
+spec:
+  selector:
+    app: eeg-app
+    component: healt-center-web-page
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: healt-center-web-page-hpa
+spec:
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50    # target: 50% use of CPU by POD
+        type: Utilization
+    type: Resource
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: healt-center-web-page-deployment
