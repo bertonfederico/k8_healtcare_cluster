@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: new-eeg-data-endpoint
-        image: fberton98/new-eeg-data-endpoint:latest
+        image: fberton98/new_eeg_data_endpoint:latest
         ports:
         - containerPort: 5000
 ---
