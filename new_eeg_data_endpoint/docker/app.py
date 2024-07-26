@@ -7,7 +7,7 @@ prediction_url = 'https://epilepsy-prediction-service/predict'
 saving_url = 'https://db-queries-service/eeg_chunks/add'
 healt_care_center_url = 'https://healt-center-web-page-service/update' 
 
-@app.route('/', methods=['POST'])
+@app.route('/new_eeg_data', methods=['POST'])
 def new_eeg_data_endpoint():
     fk_user = request.get_json()['fk_user']
     eeg_data = request.get_json()['eeg_data']
