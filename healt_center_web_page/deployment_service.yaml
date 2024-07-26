@@ -15,7 +15,7 @@ spec:
         component: healt-center-web-page
     spec:
       containers:
-      - name: healt_center_web_page
+      - name: healt-center-web-page
         image: fberton98/healt_center_web_page:latest
         ports:
         - containerPort: 5000
