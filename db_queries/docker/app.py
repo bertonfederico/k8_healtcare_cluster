@@ -71,26 +71,13 @@ def get_egg_data_prediction_chunks():
 
 @app.route('/eeg_chunks/get_last_chunks_list', methods=['GET'])
 def get_egg_data_prediction_chunks():
-    eeg_data = {}
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT ed.* FROM eeg_data_table ed INNER JOIN (SELECT fk_user, MAX(register_timestamp) AS max_timestamp FROM eeg_data_table GROUP BY fk_user) sub ON ed.fk_user = sub.fk_user AND ed.register_timestamp = sub.max_timestamp;")
+    cursor.execute("SELECT ed.fk_user, ed.eeg_data, ed.epilepsy_prediction_probability, ed.register_timestamp FROM eeg_data_table ed INNER JOIN (SELECT fk_user, MAX(register_timestamp) AS max_timestamp FROM eeg_data_table GROUP BY fk_user) sub ON ed.fk_user = sub.fk_user AND ed.register_timestamp = sub.max_timestamp;")
     results = cursor.fetchall()
     cursor.close()
     connection.close()
-    for row in results:
-        fk_user = row[0]
-        eeg_data_list = list(map(int, row[1].split(',')))
-        probability = row[2]
-        datetime_str = row[3]
-        formatted_datetime = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S").isoformat() + 'Z'
-        eeg_data[fk_user] = {
-            "eegData": eeg_data_list,
-            "probability": probability,
-            "datetime": formatted_datetime
-        }
-    json_data = json.dumps(eeg_data, indent=4)
-    return jsonify(json_data)
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

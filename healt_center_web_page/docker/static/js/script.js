@@ -1,13 +1,13 @@
 const charts = {}
 
-function addOrUpdateRow(name, eegData, probability, datetime) {
+function addOrUpdateRow(fk_id, eegData, probability, datetime) {
     const table = document.getElementById('eegTable').getElementsByTagName('tbody')[0];
-    let row = Array.from(table.rows).find(row => row.cells[0].innerText === name);
+    let row = Array.from(table.rows).find(row => row.cells[0].innerText === fk_id);
 
     if (!row) {
         row = table.insertRow();
         const first = row.insertCell(0);
-        first.innerText = name;
+        first.innerText = fk_id;
         first.style.setProperty('width', '8%');
         first.style.setProperty('height', '200px');
         const second = row.insertCell(1);
@@ -25,7 +25,7 @@ function addOrUpdateRow(name, eegData, probability, datetime) {
         }
         row.insertCell(3).innerText = datetime;
         const ctx = row.cells[1].getElementsByTagName('canvas')[0].getContext('2d');
-        charts[name] = new Chart(ctx, {
+        charts[fk_id] = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: eegData.map((_, index) => index),
@@ -66,7 +66,7 @@ function addOrUpdateRow(name, eegData, probability, datetime) {
             row.cells[2].style.backgroundColor = 'yellow';
         }
         row.cells[3].innerText = datetime
-        const chart = charts[name]
+        const chart = charts[fk_id]
         chart.data.labels = eegData.map((_, index) => index);
         chart.data.datasets[0].data = eegData;
         chart.update();
@@ -76,7 +76,7 @@ function addOrUpdateRow(name, eegData, probability, datetime) {
 async function fetchData() {
     const response = await fetch('/data');
     const data = await response.json();
-    data.forEach(item => addOrUpdateRow(item.name, item.eegData, item.probability, item.datetime));
+    data.forEach(item => addOrUpdateRow(item.fk_user, item.eegData, item.epilepsy_prediction_probability, item.register_timestamp));
 }
 
 setInterval(fetchData, 5000);

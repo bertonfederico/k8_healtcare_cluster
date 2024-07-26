@@ -1,32 +1,33 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template
+import threading
+import requests
+import time
 
 app = Flask(__name__)
 
-eeg_data = {
-    "Federico Berton": {"eegData": [12,24,3,47,5,69,7,8,1,1,155,1,13,1,221,11,16,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8], "probability": 0.4, "datetime" : '2020-07-30T18:00:00.000Z'},
-    "Mario Rossi": {"eegData": [12,24,3,4733,5,69,723,8,1,1,771,1,13,1,51,441,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8], "probability": 0.4, "datetime" : '2020-07-30T18:00:00.000Z'},
-    "Alice Nardi": {"eegData": [12,24,3,47,5,69,7,8,1,1,1001,1,1,1,155,1,15,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8], "probability": 0.4, "datetime" : '2020-07-30T18:00:00.000Z'}
-}
+eeg_data_saving = {}
+
+db_url = 'https://db-queries-service/eeg_chunks/get_last_chunks_list'
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/update', methods=['POST'])
-def update():
-    data = request.json
-    name = data['name']
-    eeg_data[name] = {
-        'eegData': data['eegData'],
-        'probability': data['probability'],
-        'datetime': data['datetime'],
-    }
-    return jsonify(success=True)
+def send_periodic_requests():
+    global eeg_data_saving
+    while True:
+        try:
+            response = requests.get(db_url)
+            if response.status_code == 200:
+                eeg_data_saving = response.json()
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
+        time.sleep(5)
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    return jsonify([{'name': name, 'eegData': data['eegData'], 'probability': data['probability'], 'datetime': data['datetime']}
-                    for name, data in eeg_data.items()])
+    return eeg_data_saving
 
 if __name__ == '__main__':
+    threading.Thread(target=send_periodic_requests, daemon=True).start()
     app.run(host='0.0.0.0', port=5000)
