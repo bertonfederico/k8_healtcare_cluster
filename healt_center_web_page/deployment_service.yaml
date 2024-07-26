@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: healt-center-web-page-deployment
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: eeg-app
