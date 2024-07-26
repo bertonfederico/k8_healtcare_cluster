@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table</title>
+    <script>
+        function addDataToTable(data) {
+            const table = document.getElementById('data-table');
+            data.forEach(item => {
+                const row = table.insertRow();
+                Object.values(item).forEach(text => {
+                    const cell = row.insertCell();
+                    cell.textContent = text;
+                });
+            });
+        }
+
+        window.onload = () => {
+            const ws = new WebSocket(`ws://${window.location.host}/ws`);
+            
+            ws.onmessage = (event) => {
+                const newData = JSON.parse(event.data);
+                if (Array.isArray(newData)) {
+                    addDataToTable(newData);
+                } else {
+                    addDataToTable([newData]);
+                }
+            };
+
+            ws.onopen = () => {
+                console.log('WebSocket connection established');
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket connection closed');
+            };
+        };
+    </script>
+</head>
+<body>
+    <h1>Dynamic Table</h1>
+    <table id="data-table" border="1">
+        <tr>
+            <th>ID</th>
+            <th>Value</th>
+        </tr>
+    </table>
+</body>
+</html>
