@@ -1,43 +1,30 @@
-from flask import Flask, jsonify, request, send_from_directory
-from flask_sock import Sock
-import json
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
-sock = Sock(app)
 
-data = [
-    {"id": 1, "value": "A"},
-    {"id": 2, "value": "B"},
-    {"id": 3, "value": "C"}
-]
-
-clients = []
+eeg_data = {
+    "Federico\r\nBerton": {"eegData": [12,24,3,47,5,69,7,8,1,1,1,1,1,1,1,1,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8], "probability": 0.4, "datetime" : '2020-07-30T18:00:00.000Z'}
+}
 
 @app.route('/')
 def index():
-    return send_from_directory('public', 'index.html')
+    return render_template('index.html')
 
-@app.route('/api/data', methods=['GET'])
+@app.route('/update', methods=['POST'])
+def update():
+    data = request.json
+    name = data['name']
+    eeg_data[name] = {
+        'eegData': data['eegData'],
+        'probability': data['probability'],
+        'datetime': data['datetime'],
+    }
+    return jsonify(success=True)
+
+@app.route('/data', methods=['GET'])
 def get_data():
-    return jsonify(data)
-
-@app.route('/api/data', methods=['POST'])
-def add_data():
-    new_data = request.json
-    data.extend(new_data)
-    for client in clients:
-        client.send(json.dumps(new_data))
-    return jsonify(new_data), 201
-
-@sock.route('/ws')
-def websocket(ws):
-    clients.append(ws)
-    ws.send(json.dumps(data))
-    while True:
-        message = ws.receive()
-        if message is None:
-            break
-    clients.remove(ws)
+    return jsonify([{'name': name, 'eegData': data['eegData'], 'probability': data['probability'], 'datetime': data['datetime']}
+                    for name, data in eeg_data.items()])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
