@@ -2,7 +2,7 @@ const charts = {}
 
 function addOrUpdateRow(fk_id, eegData, probability, datetime) {
     const table = document.getElementById('eegTable').getElementsByTagName('tbody')[0];
-    let row = Array.from(table.rows).find(row => row.cells[0].innerText === fk_id);
+    let row = Array.from(table.rows).find(row => row.cells[0].innerText === fk_id.toString());
 
     if (!row) {
         row = table.insertRow();
