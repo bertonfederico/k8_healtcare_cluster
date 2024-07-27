@@ -20,7 +20,7 @@ def add_egg_data_prediction_chunk():
     cursor = connection.cursor()
     query = "INSERT INTO eeg_data_table (fk_user, eeg_data, epilepsy_prediction_probability, register_timestamp) \
                 VALUES (%s, %s, %s, %s)"
-    cursor.execute(query, (data['fk_user'], data['eeg_data'], json.dumps(data['epilepsy_prediction_probability']), data['epilepsy_prediction_probability']))
+    cursor.execute(query, (data['fk_user'], data['eeg_data'], json.dumps(data['epilepsy_prediction_probability']), data['register_timestamp']))
     connection.commit()
     cursor.close()
     connection.close()
