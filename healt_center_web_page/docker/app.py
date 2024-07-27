@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 eeg_data_saving = {}
 
-db_url = 'https://db-queries-service/eeg_chunks/get_last_chunks_list'
+db_url = 'https://db-connection-service/eeg_chunks/get_last_chunks_list'
 
 @app.route('/')
 def index():

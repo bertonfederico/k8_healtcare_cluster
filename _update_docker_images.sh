@@ -10,6 +10,6 @@ cd new_eeg_data_endpoint/docker/
 sh docker_builder.sh
 cd ../..
 
-cd db_queries/docker/
+cd db_connection/docker/
 sh docker_builder.sh
 cd ../..
