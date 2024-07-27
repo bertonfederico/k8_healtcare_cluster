@@ -76,7 +76,7 @@ function addOrUpdateRow(fk_id, eegData, probability, datetime) {
 async function fetchData() {
     const response = await fetch('/data');
     const data = await response.json();
-    data.forEach(item => addOrUpdateRow(item.fk_user, item.eegData, item.epilepsy_prediction_probability, item.register_timestamp));
+    data.forEach(item => addOrUpdateRow(item.fk_user, item.eeg_data, item.epilepsy_prediction_probability, item.register_timestamp));
 }
 
 setInterval(fetchData, 5000);
