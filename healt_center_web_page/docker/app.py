@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 eeg_data_saving = {}
 
-db_url = 'https://db-connection-service/eeg_chunks/get_last_chunks_list'
+db_url = 'http://db-connection-service/eeg_chunks/get_last_chunks_list'
 
 @app.route('/')
 def index():
@@ -20,8 +20,10 @@ def send_periodic_requests():
             response = requests.get(db_url)
             if response.status_code == 200:
                 eeg_data_saving = response.json()
+            else:
+                raise SystemError("Error in periodic request")
         except requests.RequestException as e:
-            print(f"Request failed: {e}")
+            raise SystemError("Error in periodic request")
         time.sleep(5)
 
 @app.route('/data', methods=['GET'])
