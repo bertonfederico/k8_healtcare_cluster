@@ -1,30 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: multi-ingress
+  name: ingress
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: healtcare-cluster-input.ingress
+  - host: healtcare-cluster.com
     http:
       paths:
-      - path: /
+      - path: /update
         pathType: Prefix
         backend:
           service:
             name: new-eeg-data-endpoint-service
             port:
               number: 80
-  - host: healtcare-cluster-output.ingress
-    http:
-      paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name:  healt-center-web-page-service
+            name: healt-center-web-page-service
             port:
               number: 80
