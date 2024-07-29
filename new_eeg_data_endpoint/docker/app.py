@@ -3,9 +3,9 @@ import requests
 
 app = Flask(__name__)
 
-prediction_url = 'https://epilepsy-prediction-service/predict'
-saving_url = 'https://db-connection-service/eeg_chunks/add'
-healt_care_center_url = 'https://healt-center-web-page-service/update' 
+prediction_url = 'http://epilepsy-prediction-service/predict'
+saving_url = 'http://db-connection-service/eeg_chunks/add'
+healt_care_center_url = 'http://healt-center-web-page-service/update' 
 
 @app.route('/new_eeg_data', methods=['POST'])
 def new_eeg_data_endpoint():
