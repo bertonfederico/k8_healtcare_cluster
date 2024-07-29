@@ -3,15 +3,13 @@ kind: Ingress
 metadata:
   name: ingress
   namespace: default
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
   - host: healtcare-cluster.com
     http:
       paths:
-      - path: /update
+      - path: /new_eeg_data
         pathType: Prefix
         backend:
           service:
