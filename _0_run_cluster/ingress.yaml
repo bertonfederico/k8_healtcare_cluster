@@ -9,17 +9,20 @@ spec:
   - host: healtcare-cluster.com
     http:
       paths:
-      - path: /new_eeg_data
-        pathType: Prefix
-        backend:
-          service:
-            name: new-eeg-data-endpoint-service
-            port:
-              number: 80
       - path: /
         pathType: Prefix
         backend:
           service:
             name: healt-center-web-page-service
+            port:
+              number: 80
+  - host: realtime-epilepsy-data.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: new-eeg-data-endpoint-service
             port:
               number: 80
