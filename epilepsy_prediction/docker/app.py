@@ -15,7 +15,7 @@ def predict():
         i += 1
     post_data = pd.DataFrame(post_data)
     result = model.predict(post_data)
-    response_data = result.loc[0, 'probability(0)']
+    response_data = result.loc[0, 'probability(1)']
     return jsonify({"message": "Received", "response": response_data}), 200
 
 if __name__ == '__main__':
