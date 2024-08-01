@@ -3,6 +3,7 @@ import json
 import mysql.connector
 import os
 from datetime import datetime
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -26,6 +27,20 @@ def add_egg_data_prediction_chunk():
     connection.close()
     return jsonify({'status': 'success'}), 201
 
+@app.route('/heartbeat_chunks/add', methods=['POST'])
+def add_egg_data_prediction_chunk():
+    data = request.json
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = "INSERT INTO heartbeat_data_table (fk_user, heartbeat_value, register_timestamp) \
+                VALUES (1, %s, %s)"
+    for data_item in data:
+        cursor.execute(query, (json.dumps(data_item['Avg']), data_item['date']))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return jsonify({'status': 'success'}), 201
+
 @app.route('/eeg_chunks/get_last_chunks_list', methods=['GET'])
 def get_last_egg_data_prediction_chunks():
     connection = mysql.connector.connect(**db_config)
@@ -35,6 +50,20 @@ def get_last_egg_data_prediction_chunks():
     cursor.close()
     connection.close()
     return jsonify(results)
+
+@app.route('/heartbeat_chunks/get_last_chunks_list', methods=['GET'])
+def get_last_egg_data_prediction_chunks():
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT fk_user, heartbeat_value, register_timestamp FROM heartbeat_data_table WHERE register_timestamp >= NOW() - INTERVAL 1 DAY;")
+    results = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    grouped_data = defaultdict(list)
+    for fk_user, heartbeat_value, register_timestamp in results:
+        grouped_data[fk_user]['heartbeat_values'].append(heartbeat_value)
+        grouped_data[fk_user]['register_timestamps'].append(register_timestamp)
+    return json.dumps(grouped_data, indent=4, default=str)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
