@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: new-heartbeat-endpoint-deployment
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: eeg-app
