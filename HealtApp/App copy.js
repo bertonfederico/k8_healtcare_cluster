@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, Switch, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Switch, Image, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,78 +14,79 @@ const epileptic_data_2 = [-167,-230,-280,-315,-338,-369,-405,-392,-298,-140,27,1
 const epileptic_data_3 = [593,328,88,-106,-456,-732,-921,-782,-522,-248,-68,89,221,342,336,219,82,-32,-83,-114,-134,-134,-113,-101,-109,-112,-117,-103,-83,-20,220,564,957,1162,1125,975,807,715,677,425,40,-553,-950,-993,-554,49,574,816,732,495,61,-312,-497,-463,-258,-73,35,73,66,24,-19,-44,-48,-52,-48,-19,33,94,148,184,206,215,233,228,231,233,226,239,242,265,263,203,66,-108,-272,-373,-422,-406,-363,-309,-257,-207,-178,-151,-134,-69,208,593,918,867,602,220,-163,-553,-888,-1015,-880,-568,-216,76,288,360,284,116,-93,-253,-314,-308,-272,-247,-251,-249,-239,-225,-222,-237,-269,-287,-259,-202,-51,258,610,993,1096,1016,856,721,695,678,477,103,-471,-831,-889,-541,-94,284,436,321,128,-131,-332,-358,-320,-203,-80,23,103,151,169,173,176,173,172,191,217,248,271,312,360,421,445,413,310,177,41,-71]
 const epileptic_datas_1 = [epileptic_data_1, epileptic_data_2, epileptic_data_3];
 const epileptic_datas_2 = [epileptic_data_3, epileptic_data_1, epileptic_data_2];
+const chart_data_1 = {
+  labels: [],
+  values: [1],
+};
+const chart_data_2 = {
+  labels: [],
+  values: [1],
+};
+const chart_data_3 = {
+  labels: [],
+  values: [1],
+};
 
 const Tab = createBottomTabNavigator();
 
-const HomeScreen = ({ setChartDatas, setProbabilities, setDateTimes }) => {
+const HomeScreen = () => {
   let index = 0;
   const [isEnabled, setIsEnabled] = useState(false);
   const intervalRef = useRef(null);
 
-  const sendSingleMessage = useCallback(async (data, userIndex) => {
+  const sendSingleMessage = async (data) => {
     try {
       const response = await axios.post('http://192.168.1.242/', data, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
-
-      requestAnimationFrame(() => {
-        setProbabilities(prev => {
-          const newProbabilities = [...prev];
-          newProbabilities[userIndex - 1] = response.data.response.response.toFixed(4);
-          return newProbabilities;
-        });
-
-        setChartDatas(prev => {
-          const newChartData = [...prev];
-          newChartData[userIndex - 1] = { labels: [], values: data.eeg_data };
-          return newChartData;
-        });
-
-        setDateTimes(prev => {
-          const newDateTimes = [...prev];
-          newDateTimes[userIndex - 1] = data.register_timestamp;
-          return newDateTimes;
-        });
-      });
-
       console.log('Server response: ', response.data);
     } catch (error) {
       console.error('Error sending message: ', error.message);
     }
-  }, [setProbabilities, setChartDatas, setDateTimes]);
+  };
 
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const toggleSwitch = () => {
+    setIsEnabled(previousState => !previousState);
+  };
 
-  const sendMessages = useCallback(async () => {
-    const datetime = new Date();
-    const datetimeformat = [
-      datetime.getFullYear(),
-      datetime.getMonth() + 1,
-      datetime.getDate(),
-    ].join('-') + ' ' + [
-      datetime.getHours(),
-      datetime.getMinutes(),
-      datetime.getSeconds(),
-    ].join(':');
+  const sendMessages = async () => {
+    try {
+      const datetime = new Date();
+      const datetimeformat = [datetime.getFullYear(), datetime.getMonth() + 1, datetime.getDate()].join('-') + ' ' + [datetime.getHours(), datetime.getMinutes(), datetime.getSeconds()].join(':');
+      
+      const data_1 = { fk_user: "1", eeg_data: epileptic_datas_1[index % 3], register_timestamp: datetimeformat };
+      chart_data_1.values = data_1;
+      const data_2 = { fk_user: "2", eeg_data: non_epileptic_datas[index % 3], register_timestamp: datetimeformat };
+      chart_data_2.values = data_2;
+      const data_3 = { fk_user: "3", eeg_data: epileptic_datas_2[index % 3], register_timestamp: datetimeformat };
+      chart_data_3.values = data_3;
 
-    const data_1 = { fk_user: "1", eeg_data: epileptic_datas_1[index % 3], register_timestamp: datetimeformat };
-    const data_2 = { fk_user: "2", eeg_data: non_epileptic_datas[index % 3], register_timestamp: datetimeformat };
-    const data_3 = { fk_user: "3", eeg_data: epileptic_datas_2[index % 3], register_timestamp: datetimeformat };
+      console.log('Sending messages...');
 
-    console.log('Sending messages...');
-    await Promise.all([sendSingleMessage(data_1, 1), sendSingleMessage(data_2, 2), sendSingleMessage(data_3, 3)]);
-    console.log('Messages sent, waiting for 4 seconds...');
-    index++;
-  }, [index, sendSingleMessage]);
+      await Promise.all([
+        sendSingleMessage(data_1),
+        sendSingleMessage(data_2),
+        sendSingleMessage(data_3)
+      ]);
+
+      console.log('Messages sent, waiting for 4 seconds...');
+      index++;
+    } catch (error) {
+      console.error('Unexpected error: ', error.message);
+    }
+  };
 
   useEffect(() => {
     if (isEnabled) {
-      intervalRef.current = setInterval(sendMessages, 7000);
+      intervalRef.current = setInterval(sendMessages, 4000);
     } else {
       clearInterval(intervalRef.current);
     }
+
     return () => clearInterval(intervalRef.current);
-  }, [isEnabled, sendMessages]);
+  }, [isEnabled]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -94,7 +95,11 @@ const HomeScreen = ({ setChartDatas, setProbabilities, setDateTimes }) => {
           <Text style={styles.header}>Real-time EEG analysis</Text>
           <View style={styles.switchContainer}>
             <Text style={styles.label}>Sending OFF</Text>
-            <Switch onValueChange={toggleSwitch} value={isEnabled} style={styles.switch} />
+            <Switch
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+              style={styles.switch}
+            />
             <Text style={styles.label}>Sending ON</Text>
           </View>
         </View>
@@ -103,43 +108,47 @@ const HomeScreen = ({ setChartDatas, setProbabilities, setDateTimes }) => {
   );
 };
 
-const TabScreen = ({ chartData, probability, dateTime, user }) => (
-  <View style={styles.tabContainer}>
-    <Text style={styles.tabTitle}>User {user}</Text>
-    <Text style={styles.tabText}>Date & Time: {dateTime}</Text>
-    <Text style={styles.tabText}>Probability: {probability}</Text>
-    <EEGChart style={styles.tabChart} data={chartData} />
-  </View>
-);
+const Tab1Screen = () => {
+  return (
+    <View style={styles.tabContainer}>
+      <Text style={styles.tabText}>User 1</Text>
+      <EEGChart data={chart_data_1} />
+    </View>
+  );
+};
+
+const Tab2Screen = () => {
+  return (
+    <View style={styles.tabContainer}>
+      <Text style={styles.tabText}>User 2</Text>
+      <EEGChart data={chart_data_2} />
+    </View>
+  );
+};
+
+const Tab3Screen = () => {
+  return (
+    <View style={styles.tabContainer}>
+      <Text style={styles.tabText}>User 3</Text>
+      <EEGChart data={chart_data_3} />
+    </View>
+  );
+};
 
 export default function App() {
-  const [chartDatas, setChartDatas] = useState([{ labels: [], values: [1] }, { labels: [], values: [1] }, { labels: [], values: [1] }]);
-  const [probabilities, setProbabilities] = useState([null, null, null]);
-  const [dateTimes, setDateTimes] = useState([null, null, null]);
-
   return (
     <NavigationContainer>
       <View style={styles.appContainer}>
-        <HomeScreen
-          setChartDatas={setChartDatas}
-          setProbabilities={setProbabilities}
-          setDateTimes={setDateTimes}
-        />
+        <HomeScreen />
         <Tab.Navigator
           screenOptions={{
             tabBarStyle: { position: 'absolute', bottom: 0 },
-            headerShown: false,
+            headerShown: false
           }}
         >
-          <Tab.Screen name="User1">
-            {() => <TabScreen chartData={chartDatas[0]} probability={probabilities[0]} dateTime={dateTimes[0]} user={1} />}
-          </Tab.Screen>
-          <Tab.Screen name="User2">
-            {() => <TabScreen chartData={chartDatas[1]} probability={probabilities[1]} dateTime={dateTimes[1]} user={2} />}
-          </Tab.Screen>
-          <Tab.Screen name="User3">
-            {() => <TabScreen chartData={chartDatas[2]} probability={probabilities[2]} dateTime={dateTimes[2]} user={3} />}
-          </Tab.Screen>
+          <Tab.Screen name="User1" component={Tab1Screen} />
+          <Tab.Screen name="User2" component={Tab2Screen} />
+          <Tab.Screen name="User3" component={Tab3Screen} />
         </Tab.Navigator>
       </View>
     </NavigationContainer>
@@ -186,18 +195,9 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  tabTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
   },
   tabText: {
-    fontSize: 18,
-    color: '#555',
-    marginTop: 50,
-    marginBottom: -10,
+    fontSize: 20,
+    fontWeight: 'bold'
   },
 });
