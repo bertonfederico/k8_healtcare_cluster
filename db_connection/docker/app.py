@@ -32,10 +32,9 @@ def add_egg_data_prediction_chunk():
     data = request.json
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    query = "INSERT INTO heartbeat_data_table (fk_user, heartbeat_value, register_timestamp) \
-                VALUES (1, %s, %s)"
+    query = "INSERT INTO heartbeat_data_table (fk_user, heartbeat_value, register_timestamp) VALUES (1, %s, %s)"
     for data_item in data:
-        cursor.execute(query, (json.dumps(data_item['Avg']), data_item['date']))
+        cursor.execute(query, (data_item['Avg'], data_item['date']))
     connection.commit()
     cursor.close()
     connection.close()
