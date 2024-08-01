@@ -27,3 +27,15 @@ CREATE TABLE `eeg_data_table` (
   CONSTRAINT `eeg_data_table_ibfk_1` FOREIGN KEY (`fk_user`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 
+-- Creating "heartbeat_data_table" table
+CREATE TABLE `heartbeat_data_table` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fk_user` int(11) DEFAULT NULL,
+  `heartbeat_value` int(11) NOT NULL,
+  `register_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `insert_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_user` (`fk_user`),
+  CONSTRAINT `heartbeat_data_table_ibfk_1` FOREIGN KEY (`fk_user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
