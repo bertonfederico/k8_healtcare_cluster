@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: new-heartbeat-endpoint-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eeg-app
+      component: new-heartbeat-endpoint
+  template:
+    metadata:
+      labels:
+        app: eeg-app
+        component: new-heartbeat-endpoint
+    spec:
+      containers:
+      - name: new-heartbeat-endpoint
+        image: fberton98/new_eeg_data_endpoint:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: new-heartbeat-endpoint-service
+  labels:
+    app: eeg-app
+    component: new-heartbeat-endpoint
+spec:
+  selector:
+    app: eeg-app
+    component: new-heartbeat-endpoint
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
