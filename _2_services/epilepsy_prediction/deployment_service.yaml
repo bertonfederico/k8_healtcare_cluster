@@ -42,7 +42,7 @@ spec:
       targetPort: 5000
   type: LoadBalancer
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: epilepsy-prediction-hpa
