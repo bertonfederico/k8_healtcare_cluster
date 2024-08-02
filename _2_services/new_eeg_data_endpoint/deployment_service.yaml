@@ -41,3 +41,22 @@ spec:
       port: 80
       targetPort: 5000
   type: LoadBalancer
+---
+kind: HorizontalPodAutoscaler
+metadata:
+  name: new-eeg-data-endpoint-hpa
+  namespace: default
+spec:
+  maxReplicas: 10
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: new-eeg-data-endpoint-deployment
