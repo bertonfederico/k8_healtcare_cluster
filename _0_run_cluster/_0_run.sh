@@ -11,6 +11,10 @@ cd new_eeg_data_endpoint/docker/
 sh docker_builder.sh
 cd ../..
 
+cd new_heartbeat_data_endpoint/docker/
+sh docker_builder.sh
+cd ../..
+
 cd db_connection/docker/
 sh docker_builder.sh
 cd ../..
@@ -53,6 +57,10 @@ sh _run_service.sh
 cd ..
 
 cd new_eeg_data_endpoint
+sh _run_service.sh
+cd ..
+
+cd new_heartbeat_data_endpoint
 sh _run_service.sh
 cd ..
 
