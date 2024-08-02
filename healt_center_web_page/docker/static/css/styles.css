@@ -23,21 +23,21 @@ th {
     max-height: 200px;
 }
 
-#eegTable tbody {
+#eegTable tbody, #heartTable tbody {
     display: block;
     max-height: 530px;
     overflow-y: auto;
 }
 
-#eegTable thead {
+#eegTable thead, #heartTable thead {
     width: 98.7%;
 }
 
-#eegTable tbody tr {
+#eegTable tbody tr, #heartTable tbody tr {
     width: 100%;
 }
 
-#eegTable thead, #eegTable tbody tr {
+#eegTable thead, #eegTable tbody tr, #heartTable thead, #heartTable tbody tr {
     display: table;
     table-layout: fixed;
 }
@@ -49,7 +49,21 @@ canvas {
 
 .subWindows {
     display: none;
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin-top: 20px;
+    padding: 8px;
+    margin-top: 3px;
+}
+
+.center-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Per centrare verticalmente all'interno del contenitore */
+}
+
+#switch {
+    width: 200px;
+    height: 40px;
+    font-size: 18px;
+    text-align: center;
+    text-align-last: center;
 }

@@ -6,14 +6,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
     <h1>Real-time healt analysis</h1>
-    <select id="switch" onchange="openWindow()">
-        <option value="1">Opzione 1</option>
-        <option value="2">Opzione 2</option>
-    </select>
+    <div class="center-container">
+        <select id="switch" onchange="openWindow()">
+            <option value="1">EEG data</option>
+            <option value="2">Heart beat</option>
+        </select>
+    </div>
     <div id="eeg_data" class="subWindows">
         <table id="eegTable">
             <thead>

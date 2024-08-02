@@ -104,14 +104,18 @@ function addOrUpdateHeartRow(fk_id, heartbeat_values, register_timestamps) {
                 scales: {
                     x: {
                         type: 'time',
+                        time: {
+                            tooltipFormat: 'MMM dd, yyyy HH:mm',
+                            unit: 'minute'
+                        },
                         title: {
                             display: true,
                             text: 'Timestamp'
                         }
                     },
                     y: {
-                        min: 0,
-                        max: 150,
+                        min: 10,
+                        max: 130,
                         title: {
                             display: true,
                             text: 'Heart beat'
@@ -123,7 +127,7 @@ function addOrUpdateHeartRow(fk_id, heartbeat_values, register_timestamps) {
     } else {
         const chart = charts[fk_id]
         chart.data.labels = register_timestamps;
-        chart.data.datasets[0].data = eegData;
+        chart.data.datasets[0].data = heartbeat_values;
         chart.update();
     }
 }
@@ -140,12 +144,12 @@ async function fetchHeartBeatData() {
     for (let fk_user in data) {
         const heartbeat_values = data[fk_user].heartbeat_values;
         const register_timestamps = data[fk_user].register_timestamps;
-        addOrUpdateHeartRow(fk_user, JSON.parse(heartbeat_values), JSON.parse(register_timestamps));
+        addOrUpdateHeartRow(fk_user, heartbeat_values, register_timestamps);
     }
 }
 
 setInterval(fetchEegData, 5000);
-setInterval(fetchHeartBeatData, 5000);
+setInterval(fetchHeartBeatData, 25000);
 
 fetchEegData();
 fetchHeartBeatData();

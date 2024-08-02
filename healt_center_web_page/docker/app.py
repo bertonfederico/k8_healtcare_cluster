@@ -43,11 +43,11 @@ def send_periodic_heartbeat_requests():
         time.sleep(5)
 
 @app.route('/eeg_data', methods=['GET'])
-def get_data():
+def get_eeg_data():
     return eeg_data_saving
 
 @app.route('/heartbeat_data', methods=['GET'])
-def get_data():
+def get_heartbeat_data():
     return heartbeat_data_saving
 
 if __name__ == '__main__':
