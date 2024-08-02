@@ -55,7 +55,7 @@ def get_last_egg_data_prediction_chunks():
 def get_last_heartbeat_prediction_chunks():
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT fk_user, heartbeat_value, register_timestamp FROM heartbeat_data_table WHERE register_timestamp >= NOW() - INTERVAL 1 DAY;")
+    cursor.execute("SELECT fk_user, heartbeat_value, register_timestamp FROM heartbeat_data_table WHERE register_timestamp >= NOW() - INTERVAL 5 HOUR;")
     results = cursor.fetchall()
     cursor.close()
     connection.close()
