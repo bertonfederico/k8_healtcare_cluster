@@ -67,3 +67,16 @@ canvas {
     text-align: center;
     text-align-last: center;
 }
+
+.cell-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between; /* Distribuisce lo spazio tra le righe */
+}
+
+.line {
+    padding: 5px;
+    border: 1px solid black;
+    box-sizing: border-box; /* Include il padding e il bordo nelle dimensioni */
+}
