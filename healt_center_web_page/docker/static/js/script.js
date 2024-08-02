@@ -13,10 +13,10 @@ function addOrUpdateEegRow(fk_id, eegData, probability, datetime) {
         first.style.setProperty('height', '200px');
         const second = row.insertCell(1);
         second.innerHTML = '<canvas></canvas>';
-        second.style.setProperty('width', '60%');
+        second.style.setProperty('width', '55%');
         const third = row.insertCell(2);
         third.innerText = probability;
-        third.style.setProperty('width', '10%');
+        third.style.setProperty('width', '20%');
         if (probability > 0.7) {
             third.style.backgroundColor = 'red';
         } else if (probability < 0.3) {
