@@ -25,6 +25,11 @@ spec:
             secretKeyRef:
               name: mysql-secret
               key: mysql-root-password
+        resources:
+          limits:
+            cpu: 400m
+          requests:
+            cpu: 200m
 ---
 apiVersion: v1
 kind: Service

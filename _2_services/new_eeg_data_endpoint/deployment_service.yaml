@@ -19,6 +19,11 @@ spec:
         image: fberton98/new_eeg_data_endpoint:latest
         ports:
         - containerPort: 5000
+        resources:
+          limits:
+            cpu: 400m
+          requests:
+            cpu: 200m
 ---
 apiVersion: v1
 kind: Service
