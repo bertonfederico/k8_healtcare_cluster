@@ -48,6 +48,7 @@ spec:
       targetPort: 5000
   type: LoadBalancer
 ---
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: db-connection-hpa
