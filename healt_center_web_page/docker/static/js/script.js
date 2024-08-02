@@ -1,4 +1,5 @@
-const charts = {}
+const EEG_charts = {}
+const hearbeat_charts = {}
 
 function addOrUpdateEegRow(fk_id, eegData, probability, datetime) {
     const table = document.getElementById('eegTable').getElementsByTagName('tbody')[0];
@@ -25,7 +26,7 @@ function addOrUpdateEegRow(fk_id, eegData, probability, datetime) {
         }
         row.insertCell(3).innerText = datetime;
         const ctx = row.cells[1].getElementsByTagName('canvas')[0].getContext('2d');
-        charts[fk_id] = new Chart(ctx, {
+        EEG_charts[fk_id] = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: eegData.map((_, index) => index),
@@ -66,7 +67,7 @@ function addOrUpdateEegRow(fk_id, eegData, probability, datetime) {
             row.cells[2].style.backgroundColor = 'yellow';
         }
         row.cells[3].innerText = datetime
-        const chart = charts[fk_id]
+        const chart = EEG_charts[fk_id]
         chart.data.labels = eegData.map((_, index) => index);
         chart.data.datasets[0].data = eegData;
         chart.update();
@@ -86,7 +87,7 @@ function addOrUpdateHeartRow(fk_id, heartbeat_values, register_timestamps) {
         const second = row.insertCell(1);
         second.innerHTML = '<canvas></canvas>';
         const ctx = row.cells[1].getElementsByTagName('canvas')[0].getContext('2d');
-        charts[fk_id] = new Chart(ctx, {
+        hearbeat_charts[fk_id] = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: register_timestamps,
@@ -125,7 +126,7 @@ function addOrUpdateHeartRow(fk_id, heartbeat_values, register_timestamps) {
             }
         });
     } else {
-        const chart = charts[fk_id]
+        const chart = hearbeat_charts[fk_id]
         chart.data.labels = register_timestamps;
         chart.data.datasets[0].data = heartbeat_values;
         chart.update();

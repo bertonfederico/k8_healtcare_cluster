@@ -25,7 +25,7 @@ th {
 
 #eegTable tbody, #heartTable tbody {
     display: block;
-    max-height: 530px;
+    max-height: 460px;
     overflow-y: auto;
 }
 
