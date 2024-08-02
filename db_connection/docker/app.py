@@ -28,13 +28,14 @@ def add_egg_data_prediction_chunk():
     return jsonify({'status': 'success'}), 201
 
 @app.route('/heartbeat_chunks/add', methods=['POST'])
-def add_egg_data_prediction_chunk():
-    data = request.json
+def add_heartbeat_prediction_chunk():
+    data = request.json['heartbeat_data']
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
     query = "INSERT INTO heartbeat_data_table (fk_user, heartbeat_value, register_timestamp) VALUES (1, %s, %s)"
     for data_item in data:
-        cursor.execute(query, (data_item['Avg'], data_item['date']))
+        timestamp = datetime.strptime(data_item['date'], '%Y-%m-%d %H:%M:%S %z').strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute(query, (int(data_item["Avg"]), timestamp))
     connection.commit()
     cursor.close()
     connection.close()
@@ -51,17 +52,22 @@ def get_last_egg_data_prediction_chunks():
     return jsonify(results)
 
 @app.route('/heartbeat_chunks/get_last_chunks_list', methods=['GET'])
-def get_last_egg_data_prediction_chunks():
+def get_last_heartbeat_prediction_chunks():
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor(dictionary=True)
     cursor.execute("SELECT fk_user, heartbeat_value, register_timestamp FROM heartbeat_data_table WHERE register_timestamp >= NOW() - INTERVAL 1 DAY;")
     results = cursor.fetchall()
     cursor.close()
     connection.close()
-    grouped_data = defaultdict(list)
-    for fk_user, heartbeat_value, register_timestamp in results:
-        grouped_data[fk_user]['heartbeat_values'].append(heartbeat_value)
-        grouped_data[fk_user]['register_timestamps'].append(register_timestamp)
+    grouped_data = {}
+    for record in results:
+        if record['fk_user'] not in grouped_data:
+            grouped_data[record['fk_user']] = {
+                'heartbeat_values': [],
+                'register_timestamps': []
+            }
+        grouped_data[record['fk_user']]['heartbeat_values'].append(record['heartbeat_value'])
+        grouped_data[record['fk_user']]['register_timestamps'].append(record['register_timestamp'])
     return json.dumps(grouped_data, indent=4, default=str)
 
 if __name__ == '__main__':
