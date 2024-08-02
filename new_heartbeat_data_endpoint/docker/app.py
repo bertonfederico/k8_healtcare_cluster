@@ -8,7 +8,6 @@ saving_url = 'http://db-connection-service/heartbeat_chunks/add'
 @app.route('/', methods=['POST'])
 def new_heartbeat_endpoint():
     json_data = request.get_json()['data']
-    print(json_data)
     heartbeat_data = json_data['metrics'][0]['data']
 
     # POST request for saving data in database
