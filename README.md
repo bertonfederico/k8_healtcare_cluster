@@ -331,8 +331,7 @@ The virtual machines can be configured in different network modes based on the r
 - To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
 
 Once the VMs are created, static IPs must be defined for the two VMs:
-- Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***;
-- Modify the configuration file to set the static IP address.
+- Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***.
 - To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
 - Install Kubernetes
 
