@@ -1,23 +1,23 @@
-# Usa un'immagine base di Python
+# Use the base image of Python
 FROM python:3.9-slim
 
-# Installa Java
+# Install Java
 RUN apt-get update && apt-get install -y openjdk-17-jre-headless && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Imposta la directory di lavoro
+# Set the working directory
 WORKDIR /app
 
-# Copia i file requirements.txt e il codice dell'app nella directory di lavoro
+# Copy the requirements files
 COPY requirements.txt /app/
 COPY . /app
 
-# Installa le dipendenze Python
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Espone la porta su cui l'app Flask verrà eseguita
+# Expose the port that Flask will listen on
 EXPOSE 5000
 
-# Comando per eseguire l'app Flask
+# Command to start the Flask app
 CMD ["python", "app.py"]

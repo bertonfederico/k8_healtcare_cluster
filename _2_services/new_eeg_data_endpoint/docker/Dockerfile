@@ -1,18 +1,18 @@
-# Usa l'immagine di base di Python
+# Use the base image of Python
 FROM python:3.9-slim
 
-# Imposta la directory di lavoro
+# Set the working directory
 WORKDIR /app
 
-# Copia i file di requirements
+# Copy the requirements files
 COPY requirements.txt /app/
 COPY . /app
 
-# Installa le dipendenze
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Espone la porta su cui Flask ascolterà
+# Expose the port that Flask will listen on
 EXPOSE 5000
 
-# Comando per avviare l'app Flask
+# Command to start the Flask app
 CMD ["python", "app.py"]
