@@ -339,8 +339,13 @@ Once the VMs are created, static IPs must be defined for the two VMs:
 ### EEG data simulation
 In recent years, advanced technologies have been developed for managing electroencephalographic data, involving the implantation of electrodes in the human skull. These electrodes, powered by electrical energy, record brain data and transmit it in real-time to smartphones or directly to cloud platforms. This system enables continuous and immediate monitoring of potential epileptic issues, significantly improving the diagnosis and management of neurological disorders.
 To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service. A screenshoot of that app is shown below:
-
 <img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Immagine WhatsApp 2024-08-03 ore 15 02 32_5f2b74e0" height="500">
+
+To verify the correct reception and processing of data, we can analyze the **Real-Time Data Visualization Microservice** in the browser:
+![image](https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f)
+
 
 ### Heartbeat registration
 For tests concerning the recording, sharing, and processing of heart rate data, an iOS application available on iPhones was used. This application allows real-time retrieval of data recorded by the Apple Watch and sends it via REST API to the developed cluster's endpoint service. This enables healthcare personnel to monitor and identify potential cardiac issues.
+Just as with the EEG data, to verify the accuracy of this recording, you can monitor the trends through the web page service:
+![image](https://github.com/user-attachments/assets/49b8d7de-7fe8-404e-9b9a-42a3b5e6baaa)
