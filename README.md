@@ -9,6 +9,7 @@ Connected medical devices gather crucial real-time health data, that are securel
 In this project, two primary services are implemented: one concerning the recording of heart rate and another related to cerebral electrical activity.
 
 ## 💻 Project Structure
+![Add a heading (6)](https://github.com/user-attachments/assets/0593b7d1-3da0-4083-869c-8bc89595e69b)
 
 The project is structured to ensure efficient and secure management of clinical data through a microservices-based architecture. The core component of the system is a persistent database designed to securely store all incoming data. This database serves as the central repository, allowing for continuous storage and access to clinical data.
 
