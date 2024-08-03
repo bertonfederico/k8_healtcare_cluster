@@ -325,10 +325,23 @@ metadata:
 
 ## ✔️ Kubernetes: test phase
 ### Server simulation
+A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
+The virtual machines can be configured in different network modes based on the requirements:
+- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a "NAT network" is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
+- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
+
+Once the VMs are created, static IPs must be defined for the two VMs:
+- Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***;
+- Modify the configuration file to set the static IP address.
+- To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
+- Install Kubernetes
+
 
 ### EEG data simulation
+In recent years, advanced technologies have been developed for managing electroencephalographic data, involving the implantation of electrodes in the human skull. These electrodes, powered by electrical energy, record brain data and transmit it in real-time to smartphones or directly to cloud platforms. This system enables continuous and immediate monitoring of potential epileptic issues, significantly improving the diagnosis and management of neurological disorders.
+To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service. A screenshoot of that app is shown below:
+
 <img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Immagine WhatsApp 2024-08-03 ore 15 02 32_5f2b74e0" height="500">
 
-
-
 ### Heartbeat registration
+For tests concerning the recording, sharing, and processing of heart rate data, an iOS application available on iPhones was used. This application allows real-time retrieval of data recorded by the Apple Watch and sends it via REST API to the developed cluster's endpoint service. This enables healthcare personnel to monitor and identify potential cardiac issues.
