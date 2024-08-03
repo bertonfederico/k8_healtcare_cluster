@@ -327,5 +327,8 @@ metadata:
 ### Server simulation
 
 ### EEG data simulation
+<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Immagine WhatsApp 2024-08-03 ore 15 02 32_5f2b74e0" height="500">
+
+
 
 ### Heartbeat registration
