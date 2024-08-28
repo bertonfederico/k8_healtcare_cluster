@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'k8_healtcare_cluster/_2_services/healt_center_web_page/docker/**'
+      - '**'
 
 jobs:
   deploy:
