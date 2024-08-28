@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'k8_healtcare_cluster/_2_services/healt_center_web_page/docker/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: SSH and deploy to VM
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        script: |
+          cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
+          docker build -t fberton98/healt_center_web_page:latest .
+          docker push fberton98/healt_center_web_page:latest
+          kubectl set image deployment/healt-center-web-page-deployment healt-center-web-page=fberton98/healt_center_web_page:latest
