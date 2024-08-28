@@ -15,15 +15,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4.1.7
 
-    - name: Run SSH Commands
+    - name: Set up SSH key
       run: |
-        echo "${{ secrets.PASSWORD }}" > private_key
-        chmod 600 private_key
-        ssh -i private_key -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+        mkdir -p ~/.ssh
+        echo "${{ secrets.PASSWORD }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    - name: Add SSH key to known_hosts
+      run: |
+        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to VM
+      run: |
+        ssh -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
           cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
           docker build -t fberton98/healt_center_web_page:latest .
           docker push fberton98/healt_center_web_page:latest
           kubectl set image deployment/healt-center-web-page-deployment healt-center-web-page=fberton98/healt_center_web_page:latest
         EOF
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.PASSWORD }}
