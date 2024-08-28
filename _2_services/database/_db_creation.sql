@@ -35,7 +35,8 @@ CREATE TABLE `heartbeat_data_table` (
   `register_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `insert_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_unique_user_timestamp` (`fk_user`,`register_timestamp`),
   KEY `fk_user` (`fk_user`),
   CONSTRAINT `heartbeat_data_table_ibfk_1` FOREIGN KEY (`fk_user`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=InnoDB AUTO_INCREMENT=1267 DEFAULT CHARSET=latin1
 

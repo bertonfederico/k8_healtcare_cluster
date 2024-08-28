@@ -32,7 +32,7 @@ def add_heartbeat_prediction_chunk():
     data = request.json['heartbeat_data']
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    query = "INSERT INTO heartbeat_data_table (fk_user, heartbeat_value, register_timestamp) VALUES (%s, %s, %s)"
+    query = "INSERT IGNORE INTO heartbeat_data_table (fk_user, heartbeat_value, register_timestamp) VALUES (%s, %s, %s)"
     for user in [1,2,3]:
         for data_item in data:
             timestamp = datetime.strptime(data_item['date'], '%Y-%m-%d %H:%M:%S %z').strftime('%Y-%m-%d %H:%M:%S')
