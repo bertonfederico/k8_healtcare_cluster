@@ -21,8 +21,8 @@ jobs:
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
+        key: ${{ secrets.PASSWORD }}
         script: |
           cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
           docker build -t fberton98/healt_center_web_page:latest .
