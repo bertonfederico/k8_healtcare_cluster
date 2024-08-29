@@ -24,7 +24,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build Docker image
+    - name: Build and push Docker image
       run: |
         cd _2_services/healt_center_web_page/docker
         docker build -t fberton98/healt_center_web_page:latest .
@@ -35,10 +35,10 @@ jobs:
 
     - name: Esegui comandi sulla VM Xubuntu
       env:
-        SSH_USER: 'studente'
-        SSH_PASSWORD: 'studente'
-        SSH_HOST: '0.tcp.eu.ngrok.io'
-        SSH_PORT: '11044'
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
       run: |
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
           cd k8_healtcare_cluster
