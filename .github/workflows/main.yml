@@ -25,6 +25,7 @@ jobs:
         NGROK_HOST: ${{ secrets.HOST }}
         NGROK_PORT: ${{ secrets.PORT }}
       run: |
+        echo $SSH_USERNAME
         sshpass -p '${{ secrets.PASSWORD }}' ssh -v -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
           cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
           docker build -t fberton98/healt_center_web_page:latest .
