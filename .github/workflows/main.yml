@@ -20,10 +20,4 @@ jobs:
 
     - name: Build Docker Container on Remote VM
       run: |
-        echo ${{ secrets.USERNAME }}
-        sshpass -p '${{ secrets.PASSWORD }}' ssh -v -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
-          cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
-          docker build -t fberton98/healt_center_web_page:latest .
-          docker push fberton98/healt_center_web_page:latest
-          kubectl set image deployment/healt-center-web-page-deployment healt-center-web-page=fberton98/healt_center_web_page:latest
-        EOF
+        echo "test"
