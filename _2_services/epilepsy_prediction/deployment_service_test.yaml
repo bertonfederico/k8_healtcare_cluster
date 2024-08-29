@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epilepsy-prediction-deployment-test
+spec:
+  selector:
+    matchLabels:
+      app: eeg-app
+      component: epilepsy-prediction-test
+  template:
+    metadata:
+      labels:
+        app: eeg-app
+        component: epilepsy-prediction-test
+    spec:
+      containers:
+      - name: epilepsy-prediction
+        image: fberton98/epilepsy_prediction:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: epilepsy-prediction-service
+  labels:
+    app: eeg-app
+    component: epilepsy-prediction-test
+spec:
+  selector:
+    app: eeg-app
+    component: epilepsy-prediction-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer

@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: epilepsy-prediction-deployment${APPENDSTRING}
+  name: epilepsy-prediction-deployment
 spec:
   selector:
     matchLabels:
       app: eeg-app
-      component: epilepsy-prediction${APPENDSTRING}
+      component: epilepsy-prediction
   template:
     metadata:
       labels:
         app: eeg-app
-        component: epilepsy-prediction${APPENDSTRING}
+        component: epilepsy-prediction
     spec:
       containers:
       - name: epilepsy-prediction
@@ -25,13 +25,33 @@ metadata:
   name: epilepsy-prediction-service
   labels:
     app: eeg-app
-    component: epilepsy-prediction${APPENDSTRING}
+    component: epilepsy-prediction
 spec:
   selector:
     app: eeg-app
-    component: epilepsy-prediction${APPENDSTRING}
+    component: epilepsy-prediction
   ports:
     - protocol: TCP
       port: 80
       targetPort: 5000
   type: LoadBalancer
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: epilepsy-prediction-hpa
+  namespace: default
+spec:
+  maxReplicas: 10
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: epilepsy-prediction-deployment

@@ -45,9 +45,9 @@ jobs:
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
           cd k8_healtcare_cluster/_2_services/epilepsy_prediction
           APPENDSTRING="-temp"
-          sed -e "s/\${APPENDSTRING}/$APPENDSTRING/g" deployment_service.yaml | kubectl apply -f -
+          sed -e "s/\${APPENDSTRING}/$APPENDSTRING/g" deployment_service_test.yaml | kubectl apply -f -
           sleep 120
-          kubectl delete -f deployment_service.yaml
+          kubectl delete -f deployment_service_test.yaml
         EOF
 
   deploy:
