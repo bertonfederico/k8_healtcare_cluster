@@ -12,22 +12,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4.1.7
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    - name: Set up SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.PASSWORD }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+    - name: Install SSH Client
+      run: sudo apt-get update && sudo apt-get install -y sshpass
 
-    - name: Add SSH key to known_hosts
+    - name: Build Docker Container on Remote VM
+      env:
+        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        NGROK_HOST: ${{ secrets.NGROK_HOST }}
+        NGROK_PORT: ${{ secrets.NGROK_PORT }}
       run: |
-        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-
-    - name: Deploy to VM
-      run: |
-        ssh -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+        sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USERNAME@$NGROK_HOST -p $NGROK_PORT << 'EOF'
           cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
           docker build -t fberton98/healt_center_web_page:latest .
           docker push fberton98/healt_center_web_page:latest
