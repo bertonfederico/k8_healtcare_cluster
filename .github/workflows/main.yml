@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '**'
+      - '_2_services/healt_center_web_page/docker/**'
 
 jobs:
   deploy:
@@ -42,6 +42,5 @@ jobs:
       run: |
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
           cd k8_healtcare_cluster
-          kubectl set image deployment/healt-center-web-page-deployment healt-center-web-page=fberton98/healt_center_web_page:latest
           kubectl rollout restart deployment healt-center-web-page-deployment
         EOF
