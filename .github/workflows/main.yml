@@ -13,11 +13,16 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
-    - name: Install SSH Client
-      run: sudo apt-get update && sudo apt-get install -y sshpass
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
 
-    - name: Build Docker Container on Remote VM
+    - name: Esegui comandi sulla VM Xubuntu
+      env:
+        SSH_USER: 'studente'
+        SSH_PASSWORD: 'studente'
+        SSH_HOST: '0.tcp.eu.ngrok.io'
+        SSH_PORT: '11044'
       run: |
-        echo "test"
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
