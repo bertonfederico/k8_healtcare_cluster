@@ -28,7 +28,7 @@ jobs:
       run: |
         cd _2_services/healt_center_web_page/docker
         docker build -t fberton98/healt_center_web_page:latest .
-        docker fberton98/healt_center_web_page:latest
+        docker push fberton98/healt_center_web_page:latest
 
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
