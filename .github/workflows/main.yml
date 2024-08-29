@@ -25,10 +25,10 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image
-      run: docker build -f _2_services/healt_center_web_page/docker/dockerfile  -t fberton98/healt_center_web_page:latest .
-
-    - name: Push Docker image
-      run: docker fberton98/healt_center_web_page:latest
+      run: |
+        cd _2_services/healt_center_web_page/docker
+        docker build -t fberton98/healt_center_web_page:latest .
+        docker fberton98/healt_center_web_page:latest
 
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
