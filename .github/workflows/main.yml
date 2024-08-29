@@ -20,10 +20,10 @@ jobs:
 
     - name: Build Docker Container on Remote VM
       env:
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-        NGROK_HOST: ${{ secrets.NGROK_HOST }}
-        NGROK_PORT: ${{ secrets.NGROK_PORT }}
+        SSH_USERNAME: ${{ secrets.USERNAME }}
+        SSH_PASSWORD: ${{ secrets.PASSWORD }}
+        NGROK_HOST: ${{ secrets.HOST }}
+        NGROK_PORT: ${{ secrets.PORT }}
       run: |
         sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USERNAME@$NGROK_HOST -p $NGROK_PORT << 'EOF'
           cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
