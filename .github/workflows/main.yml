@@ -10,17 +10,24 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Run ssh commands edit
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        command_timeout: 30m
-        script: |
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install SSH Client
+      run: sudo apt-get update && sudo apt-get install -y sshpass
+
+    - name: Build Docker Container on Remote VM
+      env:
+        SSH_USERNAME: ${{ secrets.USERNAME }}
+        SSH_PASSWORD: ${{ secrets.PASSWORD }}
+        NGROK_HOST: ${{ secrets.HOST }}
+        NGROK_PORT: ${{ secrets.PORT }}
+      run: |
+        sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no -p $NGROK_PORT $SSH_USERNAME@$NGROK_HOST << 'EOF'
           cd k8_healtcare_cluster/_2_services/healt_center_web_page/docker
           docker build -t fberton98/healt_center_web_page:latest .
           docker push fberton98/healt_center_web_page:latest
           kubectl set image deployment/healt-center-web-page-deployment healt-center-web-page=fberton98/healt_center_web_page:latest
+        EOF
