@@ -70,7 +70,7 @@ jobs:
           POD_NAME=\$(kubectl get pods --selector component=db-connection -o jsonpath='{.items[0].metadata.name}')
           kubectl wait --for=condition=ready pod/\$POD_NAME --timeout=600s
           echo "Running smoke test..."
-          kubectl exec -it \$POD_NAME -- python3 /app/smoke_test.py
+          kubectl exec -T \$POD_NAME -- python3 /app/smoke_test.py
           kubectl delete -f deployment_service_test.yam
         EOF
 

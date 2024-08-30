@@ -16,7 +16,7 @@ db_config = {
 
 @app.route('/eeg_chunks/add', methods=['POST'])
 def add_egg_data_prediction_chunk():
-    #cmd2
+    #cmd
     data = request.json
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
