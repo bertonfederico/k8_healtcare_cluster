@@ -66,8 +66,8 @@ jobs:
           cd k8_healtcare_cluster/_2_services/epilepsy_prediction/test
           kubectl apply -f deployment_service_test.yaml
           trap 'kubectl delete -f deployment_service_test.yaml' EXIT
-          kubectl wait --for=condition=available --timeout=600s deployment/epilepsy-prediction-deployment-temp
-          kubectl wait --for=condition=ready pod -l app=epilepsy-prediction-deployment-temp --timeout=600s
+          kubectl wait --for=condition=available --timeout=600s deployment/epilepsy-prediction-deployment-test
+          kubectl wait --for=condition=ready pod -l app=epilepsy-prediction-deployment-test --timeout=600s
           python3 smoke_test.py
         EOF
 
