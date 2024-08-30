@@ -68,22 +68,6 @@ ngrok config add-authtoken <AUTHTOKEN>
 ngrok tcp 22
 ```
 
-## 🚀 DevOps automation
-Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality.
-
-In detail, the automated process includes the following steps:
-- Updating Docker images
-- Running Unittest
-- Creation of temporary Test Deployments/Services
-- Updating Deployments/Services in Production
-
-This continuous integration and continuous deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
-
-### Updating Docker images
-### Running Unittest
-### Creation of temporary Test Deployments/Services
-### Updating Deployments/Services in Production
-
 ## 🖧 Kubernetes cluster developement
 ### Docker images
 Let us now see how to create an image of the service developed in Python.
@@ -369,7 +353,92 @@ metadata:
   namespace: kubernetes-dashboard
 ```
 
-## ✔️ Kubernetes: test phase
+## 🚀 DevOps automation
+Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality.
+
+In detail, the automated process encompasses updating Docker images, running unit tests in locally, creating temporary test deployments and services, and finally updating the deployments and services in production. This continuous integration and deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
+
+### Initialize CI/CD environment
+First and foremost, within the `.github/workflows` directory of the repository, a dedicated `.yaml` file must be created for each service for which an automated workflow is to be developed, intended to be executed following every commit or push.
+```yaml
+name: CI/CD Pipeline DB Connection
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '_2_services/db_connection/docker/**'
+```
+
+### Updating Docker images
+Subsequently, the process for updating the Docker image of the service must be meticulously defined. At this stage, the image will be generated with a `test` tag, as it will initially be employed for testing purposes.
+```yaml
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and push Docker images
+      run: |
+        cd _2_services/db_connection/docker
+        docker build -t fberton98/db_connection:test .
+        docker push fberton98/db_connection:test
+```
+
+### Running Unittest
+After the release of the new version's image, it is essential to conduct a thorough verification of the service's functionality in a local environment. This preliminary testing phase is crucial to ensure that the changes introduced have not caused regressions or critical defects.
+
+In the context of these tests, Mocks are employed—tools that simulate the behavior of dependent components—to isolate and focus the analysis exclusively on the service under examination. The use of Mocks is vital for replicating external interactions (originating from other microservices) without relying on actual production resources or environments, thus enabling an accurate and controlled evaluation of the newly implemented features or fixes.
+```yaml
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Run Unit Tests
+      run: |
+        docker run --rm fberton98/db_connection:test python -m unittest discover -s /app || { echo 'Unit tests failed'; exit 1; }    
+```
+```python
+    @patch('app.mysql.connector.connect')
+    def test_add_eeg_data_prediction_chunk(self, mock_connect):
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value = mock_cursor
+
+        data = { ... }        }
+
+        response = self.app.post('/eeg_chunks/add', data=json.dumps(data), content_type='application/json')
+
+        mock_cursor.execute.assert_called_once_with(
+            "INSERT INTO eeg_data_table (...) VALUES (...)",
+            (...)
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json, {'status': 'success'})
+```
+
+
+### Creation of temporary Test Deployments/Services
+### Updating Deployments/Services in Production
+
+## ✔️ Mobile Apps for healt data
 ### EEG data simulation
 In recent years, advanced technologies have been developed for managing electroencephalographic data, involving the implantation of electrodes in the human skull. These electrodes, powered by electrical energy, record brain data and transmit it in real-time to smartphones or directly to cloud platforms. This system enables continuous and immediate monitoring of potential epileptic issues, significantly improving the diagnosis and management of neurological disorders.
 To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service. A screenshoot of that app is shown below:
