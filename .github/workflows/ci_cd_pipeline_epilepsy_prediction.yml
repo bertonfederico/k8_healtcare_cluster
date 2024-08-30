@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '_2_services/epilepsy_prediction/dockertt/**'
+      - '_2_services/epilepsy_prediction/docker/**'
 
 jobs:
   build:
