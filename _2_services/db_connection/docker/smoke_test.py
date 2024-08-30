@@ -3,7 +3,6 @@ import mysql.connector
 import os
 from datetime import datetime
 
-# Configurazione del database
 db_config = {
     'user': 'root',
     'password': os.getenv('MYSQL_PASSWORD'),

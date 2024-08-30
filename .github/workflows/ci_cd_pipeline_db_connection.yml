@@ -68,7 +68,10 @@ jobs:
           trap 'kubectl delete -f deployment_service_test.yaml' EXIT
           kubectl wait --for=condition=available --timeout=600s deployment/db-connection-deployment-test
           kubectl wait --for=condition=ready pod -l app=db-connection-deployment-test --timeout=600s
-          python3 smoke_test.py
+          POD_NAME=\$(kubectl get pods -l app=db-connection-deployment-test -o jsonpath='{.items[0].metadata.name}')
+          echo "Running smoke test..."
+          kubectl exec -it \$POD_NAME -- python3 /app/smoke_test.py
+          kubectl delete -f deployment_service_test.yam
         EOF
 
   deploy:
