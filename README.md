@@ -434,9 +434,76 @@ In the context of these tests, Mocks are employed—tools that simulate the beha
         self.assertEqual(response.json, {'status': 'success'})
 ```
 
-
 ### Creation of temporary Test Deployments/Services
+If the unit tests are successful, the next step involves creating a temporary deployment and service within the cluster. This phase allows for more thorough testing, ensuring an accurate validation of the service's behavior in an environment that simulates real operational conditions and interacts with other actual microservices.
+It is therefore essential to establish an SSH connection to the Master node server, initiate the creation of the new test deployments and services, and await their activation before proceeding with the testing phase. Regardless of the result of this test, such items will be removed from the cluster.
+```yaml
+  cluster-test:
+    runs-on: ubuntu-latest
+    needs: unit-test
+    steps:
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+    - name: Test Deployment
+      env:
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+      run: |
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
+          set -e
+          cd k8_healtcare_cluster/_2_services/db_connection/test
+          kubectl apply -f deployment_service_test.yaml
+          trap 'kubectl delete -f deployment_service_test.yaml' EXIT
+          kubectl wait --for=condition=available --timeout=600s deployment/db-connection-deployment-test
+          POD_NAME=\$(kubectl get pods --selector component=db-connection-test -o jsonpath='{.items[0].metadata.name}')
+          kubectl wait --for=condition=ready pod/\$POD_NAME --timeout=600s
+          echo "Running smoke test..."
+          kubectl exec -i \$POD_NAME -- python3 /app/smoke_test.py
+          kubectl delete -f deployment_service_test.yam
+        EOF
+```
+```python
+   def smoke_test():
+       data = { ... }
+       response = requests.post('http://db-connection-service-test/eeg_chunks/add', json=data)
+       if response.status_code == 201:
+           print("Data inserted successfully.")
+       else:
+           print(f"Failed to insert data: {response.text}")
+           return
+```
+
 ### Updating Deployments/Services in Production
+Once the tests are successfully completed, it is essential to update the "latest" tag to point to the image previously labeled as "test." Following this, the deployment should be restarted to propagate the updated image to the production environment within the cluster.
+```yaml
+  deploy:
+    runs-on: ubuntu-latest
+    needs: luster-test
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+    - name: Restart Kubernetes deployment
+      env:
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+      run: |
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
+          kubectl rollout restart deployment db-connection-deployment
+        EOF
+```
 
 ## ✔️ Mobile Apps for healt data
 ### EEG data simulation
