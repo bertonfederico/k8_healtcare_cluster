@@ -16,8 +16,14 @@ COPY . /app
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install the testing dependencies (unittest is included in Python standard library)
+RUN pip install --no-cache-dir unittest
+
+# Copy the unit test file
+COPY unit_test.py /app/unit_test.py
+
 # Expose the port that Flask will listen on
 EXPOSE 5000
 
-# Command to start the Flask app
+# Default command to start the Flask app
 CMD ["python", "app.py"]

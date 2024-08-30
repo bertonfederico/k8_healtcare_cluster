@@ -22,7 +22,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: epilepsy-prediction-service
+  name: epilepsy-prediction-service-test
   labels:
     app: eeg-app
     component: epilepsy-prediction-test

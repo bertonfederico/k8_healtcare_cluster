@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '_2_services/epilepsy_prediction/docker**'
+      - '_2_services/epilepsy_prediction/dockertt/**'
 
 jobs:
   build:
@@ -13,25 +13,35 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
     - name: Build and push Docker images
       run: |
         cd _2_services/epilepsy_prediction/docker
-        docker build -t fberton98/epilepsy_prediction:latest .
-        docker push fberton98/epilepsy_prediction:latest
+        docker build -t fberton98/epilepsy_prediction:test .
+        docker push fberton98/epilepsy_prediction:test
 
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
     needs: build
+    steps:
+    - name: Run Unit Tests
+      run: |
+        docker run --rm fberton98/epilepsy_prediction:test python -m unittest discover -s /app || { echo 'Unit tests failed'; exit 1; }    
+    - name: Tag and push image if tests pass
+      if: success()
+      run: |
+        docker tag fberton98/epilepsy_prediction:test fberton98/epilepsy_prediction:latest
+        docker push fberton98/epilepsy_prediction:latest
+
+  cluster-test:
+    runs-on: ubuntu-latest
+    needs: unit-tests
     steps:
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
@@ -43,16 +53,18 @@ jobs:
         SSH_PORT: ${{ secrets.SSH_PORT }}
       run: |
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
-          cd k8_healtcare_cluster/_2_services/epilepsy_prediction
-          APPENDSTRING="-temp"
-          sed -e "s/\${APPENDSTRING}/$APPENDSTRING/g" deployment_service_test.yaml | kubectl apply -f -
-          sleep 120
-          kubectl delete -f deployment_service_test.yaml
+          set -e
+          cd k8_healtcare_cluster/_2_services/epilepsy_prediction/test
+          kubectl apply -f deployment_service_test.yaml
+          trap 'kubectl delete -f deployment_service_test.yaml' EXIT
+          kubectl wait --for=condition=available --timeout=600s deployment/epilepsy-prediction-deployment-temp
+          kubectl wait --for=condition=ready pod -l app=epilepsy-prediction-deployment-temp --timeout=600s
+          python3 smoke_test.py
         EOF
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: cluster-test
     steps:
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
