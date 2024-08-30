@@ -38,7 +38,53 @@ To support system development and validation, a test application has been create
 
 Additionally, an existing iPhone application has been integrated to extract heart rate data recorded by the Apple Watch and transmit it in real-time to a dedicated REST API. This integration allows the use of widely available and reliable devices for heart rate data collection.
 
-## 🖧 Kubernetes: developement phase
+
+## 🛠️ Infrastructure design
+### Server simulation
+A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
+The virtual machines can be configured in different network modes based on the requirements:
+- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a "NAT network" is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
+- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
+
+Once the VMs are created, static IPs must be defined for the two VMs:
+- Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***.
+- To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
+- Install Kubernetes
+
+### Ngrok tunnel
+Ngrok was employed to expose the Kubernetes master node within a virtual machine (VM) to facilitate integration with GitHub Actions. Despite the use of a bridge adapter in the VM configuration, the connection to the external network is confined to the subnet of the Wi-Fi in use. Ngrok enabled the creation of a secure tunnel by providing a public URL for the Kubernetes master node. This approach allowed communication between the Kubernetes server and GitHub Actions, overcoming the limitations imposed by the VM's network configuration and facilitating automation and continuous integration without the need for changes to the physical network configuration.
+After creating your own token in the Ngrok account, you can crare the tunnel connection with the Master node via a TCP link:
+
+```sh
+# Installing Ngrok
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+    && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list \
+    && sudo apt update && sudo apt install ngrok
+
+# Connecting to your account with authtoken
+ngrok config add-authtoken <AUTHTOKEN>
+
+# Starting TCP tunnel
+ngrok tcp 22
+```
+
+## 🚀 DevOps automation
+Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality.
+
+In detail, the automated process includes the following steps:
+- Updating Docker images
+- Running Unittest
+- Creation of temporary Test Deployments/Services
+- Updating Deployments/Services in Production
+
+This continuous integration and continuous deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
+
+### Updating Docker images
+### Running Unittest
+### Creation of temporary Test Deployments/Services
+### Updating Deployments/Services in Production
+
+## 🖧 Kubernetes cluster developement
 ### Docker images
 Let us now see how to create an image of the service developed in Python.
 After developing the app, you need to define the Dokerfile that contains the information needed to create the image:
@@ -324,18 +370,6 @@ metadata:
 ```
 
 ## ✔️ Kubernetes: test phase
-### Server simulation
-A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
-The virtual machines can be configured in different network modes based on the requirements:
-- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a "NAT network" is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
-- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
-
-Once the VMs are created, static IPs must be defined for the two VMs:
-- Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***.
-- To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
-- Install Kubernetes
-
-
 ### EEG data simulation
 In recent years, advanced technologies have been developed for managing electroencephalographic data, involving the implantation of electrodes in the human skull. These electrodes, powered by electrical energy, record brain data and transmit it in real-time to smartphones or directly to cloud platforms. This system enables continuous and immediate monitoring of potential epileptic issues, significantly improving the diagnosis and management of neurological disorders.
 To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service. A screenshoot of that app is shown below:
