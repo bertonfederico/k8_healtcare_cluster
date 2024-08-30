@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-connection-deployment-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eeg-app
+      component: db-connection-test
+  template:
+    metadata:
+      labels:
+        app: eeg-app
+        component: db-connection-test
+    spec:
+      containers:
+      - name: db-connection
+        image: fberton98/db_connection:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-root-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-connection-service-test
+  labels:
+    app: eeg-app
+    component: db-connection-test
+spec:
+  selector:
+    app: eeg-app
+    component: db-connection-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
