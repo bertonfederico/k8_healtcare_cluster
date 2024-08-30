@@ -9,20 +9,16 @@ RUN apt-get update && apt-get install -y openjdk-17-jre-headless && \
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements files
+# Copy the requirements file first
 COPY requirements.txt /app/
-COPY . /app
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install the testing dependencies (unittest is included in Python standard library)
-RUN pip install --no-cache-dir unittest
+# Copy the rest of the application code and tests
+COPY . /app
 
-# Copy the unit test file
-COPY unit_test.py /app/unit_test.py
-
-# Expose the port that Flask will listen on
+# Expose the port
 EXPOSE 5000
 
 # Default command to start the Flask app
