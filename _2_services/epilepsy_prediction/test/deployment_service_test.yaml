@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: epilepsy-prediction
-        image: fberton98/epilepsy_prediction:latest
+        image: fberton98/epilepsy_prediction:test
         ports:
         - containerPort: 5000
 ---
