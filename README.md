@@ -7,6 +7,7 @@ In the digital age, healthcare is undergoing a monumental transformation driven 
 Connected medical devices gather crucial real-time health data, that are securely transmitted to the Kubernetes cluster. Kubernetes, known for its ability to orchestrate containers in a scalable and efficient manner, receives, processes, and stores the data, ensuring their integrity and continuous availability. Once processed, the data are presented through intuitive interfaces accessible to healthcare professionals, allowing for continuous and detailed monitoring of patients' health status. This system not only enhances the speed and accuracy of medical care but also enables predictive analysis, identifying potential risks and optimizing therapeutic responses.
 
 In this project, two primary services are implemented: one concerning the recording of heart rate and another related to cerebral electrical activity.
+<br><br><br>
 
 ## 💻 Project Structure
 ![Add a heading (6)](https://github.com/user-attachments/assets/0593b7d1-3da0-4083-869c-8bc89595e69b)
@@ -37,7 +38,7 @@ The system is divided into several microservices, each with a specific function:
 To support system development and validation, a test application has been created to simulate the transmission of electroencephalographic data. This application uses previously saved EEG data to emulate real-world scenarios of data acquisition and transmission.
 
 Additionally, an existing iPhone application has been integrated to extract heart rate data recorded by the Apple Watch and transmit it in real-time to a dedicated REST API. This integration allows the use of widely available and reliable devices for heart rate data collection.
-
+<br><br><br>
 
 ## 🛠️ Infrastructure design and automation
 ![Mater node (11)](https://github.com/user-attachments/assets/f45197a2-46ac-4dec-83e8-582bef6ae5a4)
@@ -86,6 +87,7 @@ ngrok config add-authtoken <AUTHTOKEN>
 # Starting TCP tunnel
 ngrok tcp 22
 ```
+<br><br><br>
 
 ## 🖧 Kubernetes cluster developement
 ### Docker images
@@ -379,6 +381,7 @@ metadata:
   name: admin-user
   namespace: kubernetes-dashboard
 ```
+<br><br><br>
 
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality.
@@ -531,6 +534,7 @@ Once the tests are successfully completed, it is essential to update the `latest
           kubectl rollout restart deployment db-connection-deployment
         EOF
 ```
+<br><br><br>
 
 ## ✔️ Mobile Apps for healt data
 ### EEG data simulation
