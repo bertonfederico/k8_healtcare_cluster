@@ -173,7 +173,12 @@ kubectl apply -f deployment_service.yaml
 ```
 
 ### Database
+In the Kubernetes cluster, a persistent MySQL database has been established to store and manage health-related data:
 - PersistentVolume creation: provides persistent, shared storage on a node for MySQL database data
+- PersistentVolumeClaim creation: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
+- ConfigMap creation: configures and provides custom configuration files and parameters for the MySQL server
+- Secret creation: stores and manages sensitive information, such as the MySQL root password, securely
+- DEPLOYMENT creation: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -187,9 +192,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mnt/data/mysql
-```
-- PersistentVolumeClaim creation: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
-```yaml
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -200,9 +203,7 @@ spec:
   resources:
     requests:
       storage: 2Gi
-```
-- ConfigMap creation: configures and provides custom configuration files and parameters for the MySQL server
-```yaml
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -215,9 +216,7 @@ data:
     log-error=/var/lib/mysql/error.log
     pid-file=/var/run/mysqld/mysqld.pid
     sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
-```
-- Secret creation: stores and manages sensitive information, such as the MySQL root password, securely
-```yaml
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -225,9 +224,7 @@ metadata:
 type: Opaque
 data:
   mysql-root-password: ---
-```
-- DEPLOYMENT creation: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
-```yaml
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
