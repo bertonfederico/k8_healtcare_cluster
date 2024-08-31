@@ -121,7 +121,7 @@ docker push fberton98/new_eeg_data_endpoint:latest
 
 
 ### Services
-After creating the service image, you need to start the service in the Kubernetes cluster. To do this, it is a good idea to create a ***deployment_service.yaml*** file that contains the DEPLOYMENT and SERVICE parts:
+After creating the service image, you need to start the service in the Kubernetes cluster. To do this, it is a good idea to create a ***deployment_service.yaml*** file that contains the deployment and service parts:
 ```yaml
 ###
 apiVersion: apps/v1
@@ -167,7 +167,7 @@ spec:
       targetPort: 5000                                       # port setted up in Dockerfile
   type: LoadBalancer                                         # distributes incoming traffic across multiple nodes/pods
 ```
-Then such DEPLOYMENT and SERVICE can be started:
+Then such deployment and service can be started:
 ```sh
 kubectl apply -f deployment_service.yaml
 ```
@@ -178,7 +178,7 @@ In the Kubernetes cluster, a persistent MySQL database has been established to s
 - PersistentVolumeClaim creation: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
 - ConfigMap creation: configures and provides custom configuration files and parameters for the MySQL server
 - Secret creation: stores and manages sensitive information, such as the MySQL root password, securely
-- DEPLOYMENT creation: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
+- Deployment creation: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -289,7 +289,7 @@ spec:
     kind: Deployment
     name: new-eeg-data-endpoint-deployment
 ```
-This requires that the following be established in the DEPLOYMENTS:
+This requires that the following be established in the deployments:
 - the minimum amount of CPU guaranteed to the container
 - the maximum amount of CPU that the container can use
 ```yaml
