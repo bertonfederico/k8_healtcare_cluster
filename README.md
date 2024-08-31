@@ -533,6 +533,8 @@ To test the developed cluster, an app was created using React Native. This app a
 
 
 To verify the correct reception and processing of data, we can analyze the **Real-Time Data Visualization Microservice** in the browser:
+<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Image 1" width="200" style="float: left; margin-right: 10px;">
+<img src="https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f" alt="Image 2" width="200">
 
 ![image](https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f)
 
