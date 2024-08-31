@@ -174,11 +174,11 @@ kubectl apply -f deployment_service.yaml
 
 ### Database
 In the Kubernetes cluster, a persistent MySQL database has been established to store and manage health-related data:
-- PersistentVolume creation: provides persistent, shared storage on a node for MySQL database data
-- PersistentVolumeClaim creation: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
-- ConfigMap creation: configures and provides custom configuration files and parameters for the MySQL server
-- Secret creation: stores and manages sensitive information, such as the MySQL root password, securely
-- Deployment creation: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
+- **PersistentVolume creation**: provides persistent, shared storage on a node for MySQL database data
+- **PersistentVolumeClaim creation**: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
+- **ConfigMap creation**: configures and provides custom configuration files and parameters for the MySQL server
+- **Secret creation**: stores and manages sensitive information, such as the MySQL root password, securely
+- **Deployment creation**: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
