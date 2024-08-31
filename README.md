@@ -39,7 +39,21 @@ To support system development and validation, a test application has been create
 Additionally, an existing iPhone application has been integrated to extract heart rate data recorded by the Apple Watch and transmit it in real-time to a dedicated REST API. This integration allows the use of widely available and reliable devices for heart rate data collection.
 
 
-## 🛠️ Infrastructure design
+## 🛠️ Infrastructure design and automation
+![Mater node (11)](https://github.com/user-attachments/assets/f45197a2-46ac-4dec-83e8-582bef6ae5a4)
+
+### GitHub Actions
+GitHub Actions was utilized to automate the entire lifecycle of the development, testing, and deployment processes for the services. Its integration allowed predefined workflows, written in YAML files, to be automatically triggered with every commit or push to the repository.
+These workflows included building Docker images, running unit tests, creating temporary test environments, and finally updating production deployments if all tests were successful. The use of GitHub Actions ensured a continuous, fast, and reliable process, minimizing manual intervention and enhancing the efficiency of the release pipeline.
+
+### Docker Hub
+Docker was employed as the orchestration platform for building, managing, and distributing services developed in Python using the Flask framework.
+The resulting Docker images were then published on DockerHub, making them accessible for distribution across various platforms and environments. This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
+
+### Ngrok tunnel
+Ngrok was employed to expose the Kubernetes master node within a virtual machine (VM) to facilitate integration with GitHub Actions. Despite the use of a bridge adapter in the VM configuration, the connection to the external network is confined to the subnet of the Wi-Fi in use. Ngrok enabled the creation of a secure tunnel by providing a public URL for the Kubernetes master node. This approach allowed communication between the Kubernetes server and GitHub Actions, overcoming the limitations imposed by the VM's network configuration and facilitating automation and continuous integration without the need for changes to the physical network configuration.
+After creating your own token in the Ngrok account, you can crare the tunnel connection with the Master node via a TCP link:
+
 ### Server simulation
 A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
 The virtual machines can be configured in different network modes based on the requirements:
@@ -50,11 +64,7 @@ Once the VMs are created, static IPs must be defined for the two VMs:
 - Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***.
 - To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
 - Install Kubernetes
-
-### Ngrok tunnel
-Ngrok was employed to expose the Kubernetes master node within a virtual machine (VM) to facilitate integration with GitHub Actions. Despite the use of a bridge adapter in the VM configuration, the connection to the external network is confined to the subnet of the Wi-Fi in use. Ngrok enabled the creation of a secure tunnel by providing a public URL for the Kubernetes master node. This approach allowed communication between the Kubernetes server and GitHub Actions, overcoming the limitations imposed by the VM's network configuration and facilitating automation and continuous integration without the need for changes to the physical network configuration.
-After creating your own token in the Ngrok account, you can crare the tunnel connection with the Master node via a TCP link:
-
+- In Master node, install Ngrok, authenticate and create the tunnel:
 ```sh
 # Installing Ngrok
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
