@@ -527,16 +527,10 @@ Once the tests are successfully completed, it is essential to update the "latest
 ## ✔️ Mobile Apps for healt data
 ### EEG data simulation
 In recent years, advanced technologies have been developed for managing electroencephalographic data, involving the implantation of electrodes in the human skull. These electrodes, powered by electrical energy, record brain data and transmit it in real-time to smartphones or directly to cloud platforms. This system enables continuous and immediate monitoring of potential epileptic issues, significantly improving the diagnosis and management of neurological disorders.
-To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service. A screenshoot of that app is shown below:
-
-<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Immagine WhatsApp 2024-08-03 ore 15 02 32_5f2b74e0" height="500">
-
-
-To verify the correct reception and processing of data, we can analyze the **Real-Time Data Visualization Microservice** in the browser:
-<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Image 1" width="200" style="float: left; margin-right: 10px;">
-<img src="https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f" alt="Image 2" width="200">
-
-![image](https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f)
+To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service.
+To verify the correct reception and processing of data, we can analyze the **Real-Time Data Visualization Microservice** in the browser.
+<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Image 1" height="500" style="float: left; margin-right: 10px;">
+<img src="https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f" alt="Image 2" height="500">
 
 
 ### Heartbeat registration
