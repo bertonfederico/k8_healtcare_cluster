@@ -50,12 +50,18 @@ These workflows included building Docker images, running unit tests, creating te
 Docker was employed as the orchestration platform for building, managing, and distributing services developed in Python using the Flask framework.
 The resulting Docker images were then published on DockerHub, making them accessible for distribution across various platforms and environments. This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
 
-### Ngrok tunnel
-Ngrok was employed to expose the Kubernetes master node within a virtual machine (VM) to facilitate integration with GitHub Actions. Despite the use of a bridge adapter in the VM configuration, the connection to the external network is confined to the subnet of the Wi-Fi in use. Ngrok enabled the creation of a secure tunnel by providing a public URL for the Kubernetes master node. This approach allowed communication between the Kubernetes server and GitHub Actions, overcoming the limitations imposed by the VM's network configuration and facilitating automation and continuous integration without the need for changes to the physical network configuration.
-After creating your own token in the Ngrok account, you can crare the tunnel connection with the Master node via a TCP link:
-
 ### Server simulation
 A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
+The Master node oversees the entire cluster, coordinating the various services. Its key functions include:
+- **API Server**: Handles incoming requests (via REST API) and serves as the primary interface for interacting with the cluster.
+- **etcd**: Stores cluster configuration data in a distributed and consistent manner. It acts as Kubernetes' "database."
+- **Controller Manager**: Runs controllers that monitor the cluster's state and ensure it matches the desired state (for example, it manages pod replication).
+- **Scheduler**: Determines which node should run a new Pod, considering factors like available resources, affinity, and more.
+The Worker node is responsible for actually running the applications in the form of containers. Its main functions include:
+- **Kubelet**: The node agent responsible for managing pods. It ensures containers are running as specified and communicates with the master’s API server.
+- **Kube-proxy**: Manages network rules on the nodes, enabling communication between different services within the cluster.
+- **Container Runtime**: The component that actually runs the containers (e.g., Docker, containerd).
+
 The virtual machines can be configured in different network modes based on the requirements:
 - If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a "NAT network" is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
 - To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
@@ -64,7 +70,10 @@ Once the VMs are created, they mmust be configured:
 - Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***.
 - To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
 - Install Kubernetes
-- In Master node, install Ngrok, authenticate and create the tunnel:
+
+### Ngrok tunnel
+Ngrok was employed to expose the Kubernetes master node within a virtual machine (VM) to facilitate integration with GitHub Actions. Despite the use of a bridge adapter in the VM configuration, the connection to the external network is confined to the subnet of the Wi-Fi in use. Ngrok enabled the creation of a secure tunnel by providing a public URL for the Kubernetes master node. This approach allowed communication between the Kubernetes server and GitHub Actions, overcoming the limitations imposed by the VM's network configuration and facilitating automation and continuous integration without the need for changes to the physical network configuration.
+After creating your own token in the Ngrok account, you can crare the tunnel connection with the Master node via a TCP link:
 ```sh
 # Installing Ngrok
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
