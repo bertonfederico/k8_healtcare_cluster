@@ -303,8 +303,19 @@ This requires that the following be established in the DEPLOYMENTS:
             cpu: 200m
 ```
 
+### MetalLB
+To provide load balancing for Kubernetes services in environments (such as VMs) that lack a native load balancer offered by public cloud providers, you can configure MetalLB. It handles the following:
+- **Exposing Services with External IPs**: MetalLB assigns external IP addresses to Kubernetes services, allowing these services to be exposed outside the cluster. This enables users and external applications (on the same network) to access Kubernetes services through dedicated IP addresses.
+- **Traffic Management**: By utilizing ARP, MetalLB manages network traffic and balances the load across cluster nodes, emulating the behavior of a traditional load balancer.
+
+To achieve this, you need to:
+- **Enable MetalLB**: in `inventory/mycluster/group_vars/k8s_cluster/addons.yml`, set `metallb_enabled` and `metallb_speaker_enabled` to `true`.
+- **Set the IP Range**: specify the range of IPs within which MetalLB can allocate addresses for services.
+- **Install MetalLB**: deploy MetalLB in cluster.
+- **Configure the IP Address Pool**: create an `IPAddressPool` object that defines the range of IP addresses available to MetalLB, and create an `L2Advertisement` object to configure MetalLB in Layer 2 mode, which allows the publication of IPs via ARP.
+
 ### Ingress
-To manage external access to services within a cluster, **Ingress** provides routing rules and load balancing for incoming HTTP or HTTPS traffic.
+To manage external access to services within a cluster, **Ingress** handles how HTTP/S traffic is routed to different services based on defined rules:
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 kubectl apply -f ingress-class.yaml
@@ -328,7 +339,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: healtcare-cluster.com                            # host for the selected service
+  - host: healtcare-cluster.com                           # host for the selected service
     http:
       paths:
       - path: /
