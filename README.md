@@ -54,7 +54,7 @@ The resulting Docker images were then published on DockerHub, making them access
 A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
 The Master node oversees the entire cluster, coordinating the various services. Its key functions include:
 - **API Server**: Handles incoming requests (via REST API) and serves as the primary interface for interacting with the cluster.
-- **etcd**: Stores cluster configuration data in a distributed and consistent manner. It acts as Kubernetes' "database."
+- **etcd**: Stores cluster configuration data in a distributed and consistent manner. It acts as Kubernetes' database.
 - **Controller Manager**: Runs controllers that monitor the cluster's state and ensure it matches the desired state (for example, it manages pod replication).
 - **Scheduler**: Determines which node should run a new Pod, considering factors like available resources, affinity, and more.
 The Worker node is responsible for actually running the applications in the form of containers. Its main functions include:
@@ -63,8 +63,8 @@ The Worker node is responsible for actually running the applications in the form
 - **Container Runtime**: The component that actually runs the containers (e.g., Docker, containerd).
 
 The virtual machines can be configured in different network modes based on the requirements:
-- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a "NAT network" is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
-- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
+- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a `NAT network` is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
+- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a `Bridge adapter` network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
 
 Once the VMs are created, they must be configured:
 - Modify the netplan configuration file to set the static IP address. The file is usually located in `/etc/netplan/`, and it might be named something like `01-netcfg.yaml` or `01-network-manager-all.yaml`.
@@ -112,7 +112,7 @@ EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 
-The file "requirements.txt" contains the dependencies that such a service needs.
+The file `requirements.txt` contains the dependencies that such a service needs.
 Finally, to deploy the image you need to run the following commands:
 ```sh
 docker build -t fberton98/new_eeg_data_endpoint:latest .
@@ -503,7 +503,7 @@ It is therefore essential to establish an SSH connection to the Master node serv
 ```
 
 ### Updating Deployments/Services in Production
-Once the tests are successfully completed, it is essential to update the "latest" tag to point to the image previously labeled as "test." Following this, the deployment should be restarted to propagate the updated image to the production environment within the cluster.
+Once the tests are successfully completed, it is essential to update the `latest` tag to point to the image previously labeled as `test`. Following this, the deployment should be restarted to propagate the updated image to the production environment within the cluster.
 ```yaml
   deploy:
     runs-on: ubuntu-latest
