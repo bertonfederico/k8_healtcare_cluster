@@ -91,6 +91,7 @@ jobs:
     - name: Tag and push Docker image as latest
       uses: docker/build-push-action@v5
       with:
+        context: _2_services/db_connection/docker
         push: true
         tags: fberton98/db_connection:latest
         cache-from: type=registry,ref=fberton98/db_connection:test
