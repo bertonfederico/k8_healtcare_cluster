@@ -10,6 +10,7 @@ In this project, two primary services are implemented: one concerning the record
 
 ## 🛠️ Infrastructure design and automation
 First of all, it is critical to carefully examine the design architecture, which is designed, once the Kubernetes cluster is up and running, to ensure advanced automation of the testing and deployment processes in response to each source code change. This automation mechanism relies on the use of GitHub Actions, a framework that enables continuous integration and continuous delivery (CI/CD) in a smooth and efficient manner. For each service, GitHub Actions orchestrate the creation of Docker images, run a full suite of automated tests, and then manage the deployment of the final version to the Kubernetes cluster. 
+
 Let us now delve into the detailed process for achieving this setup: first, it is essential to determine the physical or virtual machines that will be used. Following this, we need to define the configuration for Kubernetes, including the number of nodes and other specifications, and proceed with its installation. Once Kubernetes is set up, we can manage integration with GitHub Actions and Docker Hub to automate workflows and deploy the desired services efficiently.
 
 ![image](https://github.com/user-attachments/assets/f20dcfbd-19c8-4df6-9acf-37866c7ac2a9)
@@ -19,14 +20,17 @@ A Kubernetes cluster can be deployed using virtual machines on a standard laptop
 - API Server: it handles incoming requests (via REST API) and serves as the primary interface for interacting with the cluster.
 - etcd: it stores cluster configuration data in a distributed and consistent manner. 
 - Controller Manager: it runs controllers that monitor the cluster's state and ensure it matches the desired state.
-- Scheduler: it determines which node should run a new Pod, considering factors like available resources, affinity, and more. 
+- Scheduler: it determines which node should run a new Pod, considering factors like available resources, affinity, and more.
+
 The Worker node is responsible for actually running the applications in the form of containers. Its main functions include:
 - Kubelet: the node agent responsible for managing pods. It ensures containers are running as specified and communicates with the master’s API server.
 - Kube-proxy: it manages network rules on the nodes, enabling communication between different services within the cluster.
 - Container Runtime: the component that actually runs the containers (e.g., Docker).
+
 The virtual machines can be configured in different network modes based on the requirements:
 - If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a NAT network is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
 - To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a Bridge adapter network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
+
 Once the VMs are created, they must be configured for IP address and hostname [1]:
 - Modify the netplan configuration file to set the static IP address. The file is usually located in /etc/netplan/, and it might be named something like 01-netcfg.yaml or 01-network-manager-all.yaml.
 - To ensure proper hostname resolution within the cluster, edit /etc/hosts and /etc/hostname in both the Master and Worker.
@@ -103,6 +107,7 @@ The system is divided into several services, each with a specific function:
 
 ### Test mobile apps
 To support system development and validation, a test application has been created to simulate the transmission of electroencephalographic data. This application uses previously saved EEG data to emulate real-world scenarios of data acquisition and transmission.
+
 Additionally, an existing iPhone application has been integrated to extract heart rate data recorded by the Apple Watch and transmit it in real-time to a dedicated REST API. This integration allows the use of widely available and reliable devices for heart rate data collection.
 <br><br><br>
 
@@ -111,6 +116,7 @@ This section delves into the orchestration process of the application layer with
 
 ### Kubernetes deployments and services
 After building a Docker service image, it is possible to deploy it in the Kubernetes cluster. To accomplish this efficiently, create a deployment_service.yaml file that includes both the deployment and relative service configurations. 
+
 A Deployment manages the creation and updating of pods (operating units), whereas a Service, exposes a group of pods, allowing them to be accessed permanently by other services or users, regardless of the individual pods that may be created or destroyed. For the deployment, the following key parameters are specified: 
 
 ```yaml
@@ -188,6 +194,7 @@ Together, these elements enable effective management and exposure of application
 To provide load balancing for Kubernetes services in environments such as virtual machines, which lack the native load balancer support offered by public cloud providers, MetalLB can be configured to handle this task [3]. MetalLB offers the following functionalities:
 - Exposing services with external IPs: MetalLB assigns external IP addresses to Kubernetes services, making these services accessible outside the cluster. This allows users and external applications within the same subnet to connect to Kubernetes services through designated IP addresses.
 - Traffic management: by utilizing ARP (Address Resolution Protocol), MetalLB manages network traffic by assigning external IP addresses and directing it to the appropriate pods within the cluster. This emulates the behavior of a traditional load balancer by ensuring efficient traffic distribution.
+
 To achieve this, we need to [1]:
 - Install MetalLB in cluster.
 - Configure the IP address pool, creating an IPAddressPool object that defines the range of IP addresses available to MetalLB.
@@ -206,6 +213,7 @@ This comprehensive configuration ensures that the MySQL database is capable of m
 To manage external access to services within a Kubernetes cluster, Ingress efficiently routes HTTP/S traffic to the appropriate services according to predefined rules. It provides a centralized point for managing incoming traffic, avoiding the need to configure individual services to manage routing. To configure it, it is necessary to:
 1. Apply the default configuration (from the official Kubernetes Ingress NGINX repository) for the NGINX Ingress controller, which will manage the routing rules for HTTP/S traffic.
 2. Create a new Ingress Class that uses the NGINX controller.
+
 ```yaml
 # ingress-class.yaml
 apiVersion: networking.k8s.io/v1
@@ -242,6 +250,7 @@ spec:
 
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality. In detail, the automated process encompasses updating Docker images, running unit tests in locally, creating temporary test Deployments and Services, and finally updating the Deployments and Services in production. This continuous integration and deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
+
 Let's analyze an example of CI/CD Pipeline, that is, how the automation proceeds after commit and push regarding the db_connection service.
 
 ### Initialize CI/CD environment
@@ -281,6 +290,7 @@ Subsequently, the process for updating the Docker image of the service must be d
 ### Running Unittest
 After the release of the new version's image, it is essential to conduct a thorough verification of the service's functionality in a local environment. This preliminary testing phase is crucial to ensure that the changes introduced have not caused regressions or critical defects. 
 In the context of these tests, Mocks are employed to isolate and focus the analysis exclusively on the service under examination. The use of Mocks is vital for replicating external interactions (originating from other services) without relying on actual production resources or environments, thus enabling an isolated evaluation of the newly implemented features or fixes.
+
 The portion of the YAML file about that test is shown below:
 
 ```yaml
@@ -325,7 +335,9 @@ The Python code segment invoked by the Pipeline for executing the Unit Test is s
 
 ### Creation of temporary Test Deployments/Services
 If the unit tests are successful, the next step involves creating a temporary Deployment and Service within the cluster. This phase allows for more thorough testing, ensuring an accurate validation of the service's behavior in an environment with real operational conditions and interacting with other actual services. It is therefore essential to establish an SSH connection to the Master node server, initiate the creation of the new test Deployments and Services, and await their activation before proceeding with the testing phase. Regardless of the result of this test, such items will be removed from the cluster.
+
 The Deployment/Service test portion of the YAML file is shown below; it utilizes the "Secrets" stored on GitHub, including the hostname and port generated by Ngrok, to establish a connection with the virtual machine hosting the Master node:
+
 ```yaml
   cluster-test:
     runs-on: ubuntu-latest
@@ -421,7 +433,9 @@ For tests concerning the recording, sharing, and processing of heart rate data, 
 ## Conclusion remarks
 The project developed is a prototype of a Kubernetes cluster designed to manage real-time health information. This system is built to receive, process, and analyze critical health data immediately, allowing healthcare providers to stay continuously informed about patients' current conditions and any potential health issues detected.
 The importance of such a system lies in its ability to provide continuous and accurate monitoring, thereby improving the quality and timeliness of medical care. In a healthcare environment where every second counts, the ability to respond quickly in an emergency can make the difference. Moreover, the capability to analyze data in real time allows for the anticipation of potential complications, optimizing the therapeutic path for each patient.
+
 The choice of Kubernetes as the platform for this project is crucial. Kubernetes not only guarantees the scalability necessary to handle large volumes of data but also the reliability and resilience essential in a critical environment like healthcare. With Kubernetes, it's possible to automate the deployment, management, and monitoring of applications, ensuring that the system remains operational and performant even under high usage or hardware failures. Kubernetes' flexibility and self-healing capabilities provide the confidence needed to effectively manage the complexity of a distributed and highly dynamic system like the one proposed.
+
 In summary, the prototype developed represents a significant step towards integrating advanced technologies in the healthcare sector, aiming to enhance patient monitoring and, consequently, the quality of care provided. The combination of a robust infrastructure like Kubernetes with the critical needs of health monitoring can pave the way for new opportunities for future innovations, promoting more responsive, predictive, and personalized healthcare.
 
 <br><br><br>
