@@ -16,7 +16,6 @@ db_config = {
 
 @app.route('/eeg_chunks/add', methods=['POST'])
 def add_egg_data_prediction_chunk():
-    #cmd3
     data = request.json
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
@@ -57,7 +56,7 @@ def get_last_egg_data_prediction_chunks():
 def get_last_heartbeat_prediction_chunks():
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT fk_user, heartbeat_value, register_timestamp FROM heartbeat_data_table WHERE register_timestamp >= NOW() - INTERVAL 5 HOUR;")
+    cursor.execute("SELECT fk_user, heartbeat_value, register_timestamp FROM heartbeat_data_table WHERE register_timestamp BETWEEN (SELECT MAX(register_timestamp) - INTERVAL 5 HOUR FROM heartbeat_data_table) AND (SELECT MAX(register_timestamp) FROM heartbeat_data_table);")
     results = cursor.fetchall()
     cursor.close()
     connection.close()
