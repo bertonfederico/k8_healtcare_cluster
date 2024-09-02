@@ -246,7 +246,7 @@ spec:
               number: 80                                  # port where to expose this service
 ```
 4.	Edit the /etc/hosts file of your operating system to associate the domain with a specific IP address of Ingress Controller.
-![image](https://github.com/user-attachments/assets/4496fbd0-e938-4b59-a0b3-d5e3cc982520)
+![mamio](https://github.com/user-attachments/assets/1a2ad603-c775-41eb-a3c9-a830e51cb72e)
 
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality. In detail, the automated process encompasses updating Docker images, running unit tests in locally, creating temporary test Deployments and Services, and finally updating the Deployments and Services in production. This continuous integration and deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
@@ -358,7 +358,8 @@ The Deployment/Service test portion of the YAML file is shown below; it utilizes
 ```
 The following section presents the Bash script corresponding to the previously shown code. This portion ensures that the test pod is fully ready before proceeding with the official test, which is conducted by the subsequent Python code. 
 
-![image](https://github.com/user-attachments/assets/33914dca-f64b-4584-84f5-bb4e077cf1dd)
+![def](https://github.com/user-attachments/assets/be30882b-c1be-4e0f-a212-3585ce548221)
+
 ```python
    def smoke_test():
        data = { ... }
