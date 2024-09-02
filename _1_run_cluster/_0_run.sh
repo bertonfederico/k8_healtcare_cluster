@@ -7,6 +7,10 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.3/confi
 kubectl apply -f ./metal_lb/ipaddresspool.yaml
 kubectl apply -f ./metal_lb/l2advertisement.yaml
 
+# Creating persistent database
+kubectl apply -f ./database/_run_service.yaml
+mysql -u root -p clusterdb < _db_creation.sql
+
 # Updating docker images
 sh ../_2_services/epilepsy_prediction/docker/docker_builder.sh
 sh ../_2_services/healt_center_web_page/docker/docker_builder.sh
@@ -14,8 +18,7 @@ sh ../_2_services/new_eeg_data_endpoint/docker/docker_builder.sh
 sh ../_2_services/new_heartbeat_data_endpoint/docker/docker_builder.sh
 sh ../_2_services/db_connection/docker/docker_builder.sh
 
-# Running deployment and service .yaml files
-kubectl apply -f ../_2_services/database/run_service.yaml
+# Running deployments and services
 kubectl apply -f ../_2_services/db_connection/deployment_service.yaml
 kubectl apply -f ../_2_services/epilepsy_prediction/deployment_service.yaml
 kubectl apply -f ../_2_services/healt_center_web_page/deployment_service.yaml

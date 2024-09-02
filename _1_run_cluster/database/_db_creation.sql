@@ -1,7 +1,3 @@
--- Basic queries
-SHOW CREATE TABLE ..table_name..;
-ALTER TABLE ..table_name.. ADD COLUMN ..column_name.. ..column_type..;
-
 -- Creating "clusterdb" database
 CREATE DATABASE clusterdb;
 USE clusterdb;
