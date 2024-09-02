@@ -1,6 +1,6 @@
-###########################################
-########## Initializing cluster ###########
-###########################################
+################################################################
+########## Initializing cluster and related services ###########
+################################################################
 
 
 # Creating MetalLB
@@ -11,35 +11,32 @@ kubectl apply -f l2advertisement.yaml
 
 
 # Updating docker images
-cd epilepsy_prediction/docker/
+cd ..
+cd _2_services/epilepsy_prediction/docker/
 sh docker_builder.sh
 cd ../..
 
-cd healt_center_web_page/docker/
+cd _2_services/healt_center_web_page/docker/
 sh docker_builder.sh
 cd ../..
 
-cd new_eeg_data_endpoint/docker/
+cd _2_services/new_eeg_data_endpoint/docker/
 sh docker_builder.sh
 cd ../..
 
-cd new_heartbeat_data_endpoint/docker/
+cd _2_services/new_heartbeat_data_endpoint/docker/
 sh docker_builder.sh
 cd ../..
 
-cd db_connection/docker/
+cd _2_services/db_connection/docker/
 sh docker_builder.sh
-cd ../..
+cd ../../..
 
 
 
 # Running deployment and service .yaml files
-cd dashboard
-kubectl apply -f deployment_service.yaml
-cd ..
-
-cd database
-kubectl apply -f deployment_service.yaml
+cd _2_services/database
+kubectl apply -f run_service.yaml
 cd ..
 
 cd db_connection
@@ -60,15 +57,12 @@ cd ..
 
 cd new_heartbeat_data_endpoint
 kubectl apply -f deployment_service.yaml
-cd ..
-
-cd db_connection
-kubectl apply -f deployment_service.yaml
-cd ..
+cd ../..
 
 
 
 # Creating Ingress
+cd _0_run_cluster
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 kubectl apply -f ingress-class.yaml
 kubectl apply -f ingress.yaml
