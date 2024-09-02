@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from flask import json
 from app import app
 
-class TestEEGService(unittest.TestCase):
+class DbConnectionSmokeTest(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()

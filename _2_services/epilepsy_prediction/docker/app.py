@@ -7,7 +7,6 @@ model = Model.load("NeuralNetwork.pmml")
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    #com6
     eeg_data = request.get_json()['eeg_data']
     post_data = {}
     i = 0
