@@ -345,6 +345,7 @@ The Deployment/Service test portion of the YAML file is shown below; it utilizes
         EOF
 ```
 The following section presents the Bash script corresponding to the previously shown code. This portion ensures that the test pod is fully ready before proceeding with the official test, which is conducted by the subsequent Python code. 
+
 ![image](https://github.com/user-attachments/assets/33914dca-f64b-4584-84f5-bb4e077cf1dd)
 ```python
    def smoke_test():
