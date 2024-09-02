@@ -16,20 +16,17 @@ spec:
             name: healt-center-web-page-service
             port:
               number: 80
-  - host: realtime-epilepsy-data.com
+  - host: realtime-data.com
     http:
       paths:
-      - path: /
+      - path: /eeg
         pathType: Prefix
         backend:
           service:
             name: new-eeg-data-endpoint-service
             port:
               number: 80
-  - host: realtime-heartbeat-data.com
-    http:
-      paths:
-      - path: /
+      - path: /heartbeat
         pathType: Prefix
         backend:
           service:
