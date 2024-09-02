@@ -20,11 +20,17 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Build and push Docker images
-      run: |
-        cd _2_services/db_connection/docker
-        docker build -t fberton98/db_connection:test .
-        docker push fberton98/db_connection:test
+    - name: Build, tag, and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: _2_services/db_connection/docker
+        push: true
+        tags: |
+          fberton98/db_connection:test
+        platforms: linux/amd64,linux/arm64
+        labels: |
+          maintainer=fberton98
+          version=1.0.0      
 
   unit-test:
     runs-on: ubuntu-latest
@@ -82,17 +88,10 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Build, tag, and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: _2_services/db_connection/docker
-        push: true
-        tags: |
-          fberton98/db_connection:test
-        platforms: linux/amd64,linux/arm64
-        labels: |
-          maintainer=fberton98
-          version=1.0.0      
+    - name: Tag and push image if tests pass
+      run: |
+        docker tag fberton98/db_connection:test fberton98/db_connection:latest
+        docker push fberton98/db_connection:latest
 
   deploy:
     runs-on: ubuntu-latest
