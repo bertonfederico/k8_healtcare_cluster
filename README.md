@@ -7,6 +7,7 @@ In the digital age, healthcare is undergoing a monumental transformation driven 
 Connected medical devices gather crucial real-time health data, that are securely transmitted to the Kubernetes cluster. Kubernetes, known for its ability to orchestrate containers in a scalable and efficient manner, receives, processes, and stores the data, ensuring their integrity and continuous availability. Once processed, the data are presented through intuitive interfaces accessible to healthcare professionals, allowing for continuous and detailed monitoring of patients' health status. This system not only enhances the speed and accuracy of medical care but also enables predictive analysis, identifying potential risks and optimizing therapeutic responses.
 
 In this project, two primary services are implemented: one concerning the recording of heart rate and another related to cerebral electrical activity.
+<br><br><br>
 
 ## 💻 Project Structure
 ![Add a heading (6)](https://github.com/user-attachments/assets/0593b7d1-3da0-4083-869c-8bc89595e69b)
@@ -37,24 +38,43 @@ The system is divided into several microservices, each with a specific function:
 To support system development and validation, a test application has been created to simulate the transmission of electroencephalographic data. This application uses previously saved EEG data to emulate real-world scenarios of data acquisition and transmission.
 
 Additionally, an existing iPhone application has been integrated to extract heart rate data recorded by the Apple Watch and transmit it in real-time to a dedicated REST API. This integration allows the use of widely available and reliable devices for heart rate data collection.
+<br><br><br>
 
+## 🛠️ Infrastructure design and automation
+![Mater node (11)](https://github.com/user-attachments/assets/f45197a2-46ac-4dec-83e8-582bef6ae5a4)
 
-## 🛠️ Infrastructure design
+### GitHub Actions
+GitHub Actions was utilized to automate the entire lifecycle of the development, testing, and deployment processes for the services. Its integration allowed predefined workflows, written in YAML files, to be automatically triggered with every commit or push to the repository.
+These workflows included building Docker images, running unit tests, creating temporary test environments, and finally updating production deployments if all tests were successful. The use of GitHub Actions ensured a continuous, fast, and reliable process, minimizing manual intervention and enhancing the efficiency of the release pipeline.
+
+### Docker Hub
+Docker was employed as the orchestration platform for building, managing, and distributing services developed in Python using the Flask framework.
+The resulting Docker images were then published on DockerHub, making them accessible for distribution across various platforms and environments. This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
+
 ### Server simulation
 A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node.
-The virtual machines can be configured in different network modes based on the requirements:
-- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a "NAT network" is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
-- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a "Bridge adapter" network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
+The Master node oversees the entire cluster, coordinating the various services. Its key functions include:
+- **API Server**: Handles incoming requests (via REST API) and serves as the primary interface for interacting with the cluster.
+- **etcd**: Stores cluster configuration data in a distributed and consistent manner. It acts as Kubernetes' database.
+- **Controller Manager**: Runs controllers that monitor the cluster's state and ensure it matches the desired state (for example, it manages pod replication).
+- **Scheduler**: Determines which node should run a new Pod, considering factors like available resources, affinity, and more.
+The Worker node is responsible for actually running the applications in the form of containers. Its main functions include:
+- **Kubelet**: The node agent responsible for managing pods. It ensures containers are running as specified and communicates with the master’s API server.
+- **Kube-proxy**: Manages network rules on the nodes, enabling communication between different services within the cluster.
+- **Container Runtime**: The component that actually runs the containers (e.g., Docker, containerd).
 
-Once the VMs are created, static IPs must be defined for the two VMs:
-- Modify the netplan configuration file to set the static IP address. The file is usually located in ***/etc/netplan/***, and it might be named something like ***01-netcfg.yaml*** or ***01-network-manager-all.yaml***.
-- To ensure proper hostname resolution within the cluster, edit ***/etc/hosts*** and ***/etc/hostname*** in both the Master and Worker.
+The virtual machines can be configured in different network modes based on the requirements:
+- If communication is needed only between the Master and Worker nodes and not with external devices, configuring the VMs with a `NAT network` is sufficient. This setup isolates the cluster from external networks while allowing internal communication between the nodes.
+- To enable communication between the Kubernetes cluster and external devices (such as the host laptop containing the VMs or other devices on the same Wi-Fi network), the VMs should be configured with a `Bridge adapter` network setting. This configuration allows the cluster to interact with both the host system and other devices on the network.
+
+Once the VMs are created, they must be configured:
+- Modify the netplan configuration file to set the static IP address. The file is usually located in `/etc/netplan/`, and it might be named something like `01-netcfg.yaml` or `01-network-manager-all.yaml`.
+- To ensure proper hostname resolution within the cluster, edit `/etc/hosts` and `/etc/hostname` in both the Master and Worker.
 - Install Kubernetes
 
 ### Ngrok tunnel
 Ngrok was employed to expose the Kubernetes master node within a virtual machine (VM) to facilitate integration with GitHub Actions. Despite the use of a bridge adapter in the VM configuration, the connection to the external network is confined to the subnet of the Wi-Fi in use. Ngrok enabled the creation of a secure tunnel by providing a public URL for the Kubernetes master node. This approach allowed communication between the Kubernetes server and GitHub Actions, overcoming the limitations imposed by the VM's network configuration and facilitating automation and continuous integration without the need for changes to the physical network configuration.
 After creating your own token in the Ngrok account, you can crare the tunnel connection with the Master node via a TCP link:
-
 ```sh
 # Installing Ngrok
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
@@ -67,6 +87,7 @@ ngrok config add-authtoken <AUTHTOKEN>
 # Starting TCP tunnel
 ngrok tcp 22
 ```
+<br><br><br>
 
 ## 🖧 Kubernetes cluster developement
 ### Docker images
@@ -93,7 +114,7 @@ EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 
-The file "requirements.txt" contains the dependencies that such a service needs.
+The file `requirements.txt` contains the dependencies that such a service needs.
 Finally, to deploy the image you need to run the following commands:
 ```sh
 docker build -t fberton98/new_eeg_data_endpoint:latest .
@@ -102,7 +123,7 @@ docker push fberton98/new_eeg_data_endpoint:latest
 
 
 ### Services
-After creating the service image, you need to start the service in the Kubernetes cluster. To do this, it is a good idea to create a ***deployment_service.yaml*** file that contains the DEPLOYMENT and SERVICE parts:
+After creating the service image, you need to start the service in the Kubernetes cluster. To do this, it is a good idea to create a `deployment_service.yaml` file that contains the deployment and service parts:
 ```yaml
 ###
 apiVersion: apps/v1
@@ -148,13 +169,18 @@ spec:
       targetPort: 5000                                       # port setted up in Dockerfile
   type: LoadBalancer                                         # distributes incoming traffic across multiple nodes/pods
 ```
-Then such DEPLOYMENT and SERVICE can be started:
+Then such deployment and service can be started:
 ```sh
 kubectl apply -f deployment_service.yaml
 ```
 
 ### Database
-- PersistentVolume creation: provides persistent, shared storage on a node for MySQL database data
+In the Kubernetes cluster, a persistent MySQL database has been established to store and manage health-related data:
+- **PersistentVolume creation**: provides persistent, shared storage on a node for MySQL database data
+- **PersistentVolumeClaim creation**: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
+- **ConfigMap creation**: configures and provides custom configuration files and parameters for the MySQL server
+- **Secret creation**: stores and manages sensitive information, such as the MySQL root password, securely
+- **Deployment creation**: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -168,9 +194,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mnt/data/mysql
-```
-- PersistentVolumeClaim creation: requests a specific amount of storage from the PersistentVolume for use by MySQL pods
-```yaml
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -181,9 +205,7 @@ spec:
   resources:
     requests:
       storage: 2Gi
-```
-- ConfigMap creation: configures and provides custom configuration files and parameters for the MySQL server
-```yaml
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -196,9 +218,7 @@ data:
     log-error=/var/lib/mysql/error.log
     pid-file=/var/run/mysqld/mysqld.pid
     sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
-```
-- Secret creation: stores and manages sensitive information, such as the MySQL root password, securely
-```yaml
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -206,9 +226,7 @@ metadata:
 type: Opaque
 data:
   mysql-root-password: ---
-```
-- DEPLOYMENT creation: manages the creation and updating of MySQL pods, ensuring that the desired number of replicas is always running and applying the necessary configurations and secrets for the database operation
-```yaml
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -273,7 +291,7 @@ spec:
     kind: Deployment
     name: new-eeg-data-endpoint-deployment
 ```
-This requires that the following be established in the DEPLOYMENTS:
+This requires that the following be established in the deployments:
 - the minimum amount of CPU guaranteed to the container
 - the maximum amount of CPU that the container can use
 ```yaml
@@ -284,8 +302,19 @@ This requires that the following be established in the DEPLOYMENTS:
             cpu: 200m
 ```
 
+### MetalLB
+To provide load balancing for Kubernetes services in environments (such as VMs) that lack a native load balancer offered by public cloud providers, you can configure MetalLB. It handles the following:
+- **Exposing Services with External IPs**: MetalLB assigns external IP addresses to Kubernetes services, allowing these services to be exposed outside the cluster. This enables users and external applications (on the same network) to access Kubernetes services through dedicated IP addresses.
+- **Traffic Management**: By utilizing ARP, MetalLB manages network traffic and balances the load across cluster nodes, emulating the behavior of a traditional load balancer.
+
+To achieve this, you need to:
+- **Enable MetalLB**: in `inventory/mycluster/group_vars/k8s_cluster/addons.yml`, set `metallb_enabled` and `metallb_speaker_enabled` to `true`.
+- **Set the IP Range**: specify the range of IPs within which MetalLB can allocate addresses for services.
+- **Install MetalLB**: deploy MetalLB in cluster.
+- **Configure the IP Address Pool**: create an `IPAddressPool` object that defines the range of IP addresses available to MetalLB, and create an `L2Advertisement` object to configure MetalLB in Layer 2 mode, which allows the publication of IPs via ARP.
+
 ### Ingress
-To manage external access to services within a cluster, **Ingress** provides routing rules and load balancing for incoming HTTP or HTTPS traffic.
+To manage external access to services within a cluster, **Ingress** handles how HTTP/S traffic is routed to different services based on defined rules:
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 kubectl apply -f ingress-class.yaml
@@ -309,7 +338,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: healtcare-cluster.com                            # host for the selected service
+  - host: healtcare-cluster.com                           # host for the selected service
     http:
       paths:
       - path: /
@@ -352,6 +381,7 @@ metadata:
   name: admin-user
   namespace: kubernetes-dashboard
 ```
+<br><br><br>
 
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality.
@@ -476,7 +506,7 @@ It is therefore essential to establish an SSH connection to the Master node serv
 ```
 
 ### Updating Deployments/Services in Production
-Once the tests are successfully completed, it is essential to update the "latest" tag to point to the image previously labeled as "test." Following this, the deployment should be restarted to propagate the updated image to the production environment within the cluster.
+Once the tests are successfully completed, it is essential to update the `latest` tag to point to the image previously labeled as `test`. Following this, the deployment should be restarted to propagate the updated image to the production environment within the cluster.
 ```yaml
   deploy:
     runs-on: ubuntu-latest
@@ -504,18 +534,15 @@ Once the tests are successfully completed, it is essential to update the "latest
           kubectl rollout restart deployment db-connection-deployment
         EOF
 ```
+<br><br><br>
 
 ## ✔️ Mobile Apps for healt data
 ### EEG data simulation
 In recent years, advanced technologies have been developed for managing electroencephalographic data, involving the implantation of electrodes in the human skull. These electrodes, powered by electrical energy, record brain data and transmit it in real-time to smartphones or directly to cloud platforms. This system enables continuous and immediate monitoring of potential epileptic issues, significantly improving the diagnosis and management of neurological disorders.
-To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service. A screenshoot of that app is shown below:
-
-<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Immagine WhatsApp 2024-08-03 ore 15 02 32_5f2b74e0" height="500">
-
-
-To verify the correct reception and processing of data, we can analyze the **Real-Time Data Visualization Microservice** in the browser:
-
-![image](https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f)
+To test the developed cluster, an app was created using React Native. This app allows the transmission of previously recorded electroencephalographic data, obtained from diagnostic EEG exams, to the cluster's endpoint service.
+To verify the correct reception and processing of data, we can analyze the **Real-Time Data Visualization Microservice** in the browser.
+<img src="https://github.com/user-attachments/assets/7ad9eda1-e50d-4d80-8cfe-335c701d22db" alt="Image 1" height="400" style="float: left; margin-right: 10px;">
+<img src="https://github.com/user-attachments/assets/e2ba7f11-ddb8-49e8-aa45-9682f341f86f" alt="Image 2" height="400">
 
 
 ### Heartbeat registration
