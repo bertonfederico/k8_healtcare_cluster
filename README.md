@@ -426,8 +426,8 @@ In summary, the prototype developed represents a significant step towards integr
 <br><br><br>
 
 ## References
-[1]	Reali, Gianluca. Virtual Network & Cloud Computing, University of Perugia.
-[2]	Kubernetes Documentation. Kubernetes.io. Available: https://kubernetes.io/docs
-[3]	MetalLB project, "MetalLB: A Load-Balancer for Kubernetes on Bare Metal,".  Available: https://metallb.universe.tf/
+[1]	Reali, Gianluca. Virtual Network & Cloud Computing, University of Perugia.\
+[2]	Kubernetes Documentation. Kubernetes.io. Available: https://kubernetes.io/docs \
+[3]	MetalLB project, "MetalLB: A Load-Balancer for Kubernetes on Bare Metal,".  Available: https://metallb.universe.tf \
 [4]	Ngrok: Secure introspectable tunnels to localhost. Available: https://ngrok.com 
 
