@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '_2_services/new_heartbeat_data_endpoint/dockerr/**'
+      - '_2_services/new_heartbeat_data_endpoint/docker/**'
 
 jobs:
   build:
