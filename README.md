@@ -13,7 +13,7 @@ First of all, it is critical to carefully examine the design architecture, which
 
 Let us now delve into the detailed process for achieving this setup: first, it is essential to determine the physical or virtual machines that will be used. Following this, we need to define the configuration for Kubernetes, including the number of nodes and other specifications, and proceed with its installation. Once Kubernetes is set up, we can manage integration with GitHub Actions and Docker Hub to automate workflows and deploy the desired services efficiently.
 
-![image](https://github.com/user-attachments/assets/f20dcfbd-19c8-4df6-9acf-37866c7ac2a9)
+![Mater node (12)](https://github.com/user-attachments/assets/48621aba-c82b-45ae-a620-92063b5cf8e1)
 
 ### Server simulation and Kubernetes cluster creation
 A Kubernetes cluster can be deployed using virtual machines on a standard laptop. Specifically, two Linux VMs can be created: one as the Master node and the other as the Worker node. The Master node oversees the entire cluster, coordinating the various services. Its key functions include:
@@ -93,7 +93,7 @@ GitHub Actions is used to automate the entire lifecycle of the development, test
 ## 💻 Project deployment
 The project is structured to ensure efficient and secure management of clinical data through a services-based architecture. The core component of the system is a persistent database designed to securely store all incoming data. This database serves as the central repository, allowing for continuous storage and access to clinical data.
 
-![image](https://github.com/user-attachments/assets/e3dc27ea-2cfe-4f7a-9e99-fa8ccea1b987)
+![Add a heading (1)](https://github.com/user-attachments/assets/6d11aecf-7525-4bfa-aac3-9c9f93e53416)
 
 
 ### Services
@@ -246,7 +246,7 @@ spec:
               number: 80                                  # port where to expose this service
 ```
 4.	Edit the /etc/hosts file of your operating system to associate the domain with a specific IP address of Ingress Controller.
-![mamio](https://github.com/user-attachments/assets/1a2ad603-c775-41eb-a3c9-a830e51cb72e)
+<img src="https://github.com/user-attachments/assets/1a2ad603-c775-41eb-a3c9-a830e51cb72e" alt="def" height="150">
 
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality. In detail, the automated process encompasses updating Docker images, running unit tests in locally, creating temporary test Deployments and Services, and finally updating the Deployments and Services in production. This continuous integration and deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
@@ -358,7 +358,7 @@ The Deployment/Service test portion of the YAML file is shown below; it utilizes
 ```
 The following section presents the Bash script corresponding to the previously shown code. This portion ensures that the test pod is fully ready before proceeding with the official test, which is conducted by the subsequent Python code. 
 
-![def](https://github.com/user-attachments/assets/be30882b-c1be-4e0f-a212-3585ce548221)
+<img src="https://github.com/user-attachments/assets/be30882b-c1be-4e0f-a212-3585ce548221" alt="def" height="500">
 
 ```python
    def smoke_test():

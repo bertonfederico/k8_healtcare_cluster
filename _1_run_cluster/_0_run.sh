@@ -9,7 +9,7 @@ kubectl apply -f ./metal_lb/l2advertisement.yaml
 
 # Creating persistent database
 kubectl apply -f ./database/_run_service.yaml
-mysql -u root -p clusterdb < _db_creation.sql
+mysql -u root -p clusterdb < ./database/_db_creation.sql
 
 # Updating docker images
 sh ../_2_services/epilepsy_prediction/docker/docker_builder.sh
@@ -29,6 +29,9 @@ kubectl apply -f ../_2_services/new_heartbeat_data_endpoint/deployment_service.y
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 kubectl apply -f ./ingress/ingress-class.yaml
 kubectl apply -f ./ingress/ingress.yaml
+
+# Creating metric saver for HPA
+kubectl apply -f ./metric_saver_hpa/metric-saver-components.yaml
 
 # Installing, connecting and starting Ngrok
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
