@@ -60,3 +60,16 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: healt-center-web-page-deployment
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+    scaleDown:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 30
