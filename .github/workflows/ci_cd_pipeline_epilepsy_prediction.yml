@@ -72,11 +72,21 @@ jobs:
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
           set -e
           cd k8_healtcare_cluster/_2_services/epilepsy_prediction/test
+
+          # Running YAML file with test deplyment and service
           kubectl apply -f deployment_service_test.yaml
+
+          # Settind deployment/service deletion in case of errors during test
           trap 'kubectl delete -f deployment_service_test.yaml' EXIT
+
+          # Waiting for deployment availability
           kubectl wait --for=condition=available --timeout=600s deployment/epilepsy-prediction-deployment-test
+          
+          # Waiting for pod completion
           POD_NAME=\$(kubectl get pods --selector component=epilepsy-prediction-test -o jsonpath='{.items[0].metadata.name}')
           kubectl wait --for=condition=ready pod/\$POD_NAME --timeout=600s
+          
+          # Running test
           echo "Running smoke test..."
           kubectl exec -i \$POD_NAME -- python3 /app/smoke_test.py
           kubectl delete -f deployment_service_test.yaml
