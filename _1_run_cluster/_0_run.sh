@@ -9,7 +9,7 @@ kubectl apply -f ./metal_lb/l2advertisement.yaml
 
 # Creating persistent database
 kubectl apply -f ./database/_run_service.yaml
-mysql -u root -p clusterdb < _db_creation.sql
+mysql -u root -p clusterdb < ./database/_db_creation.sql
 
 # Updating docker images
 sh ../_2_services/epilepsy_prediction/docker/docker_builder.sh
