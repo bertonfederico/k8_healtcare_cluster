@@ -30,6 +30,9 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 kubectl apply -f ./ingress/ingress-class.yaml
 kubectl apply -f ./ingress/ingress.yaml
 
+# Creating metric saver for HPA
+kubectl apply -f ./metric_saver_hpa/metric-saver-components.yaml
+
 # Installing, connecting and starting Ngrok
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
     && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list \
