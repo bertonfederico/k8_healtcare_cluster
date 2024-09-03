@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: new-heartbeat-endpoint
-        image: fberton98/new_heartbeata_endpoint:latest
+        image: fberton98/new_heartbeat_data_endpoint:latest
         ports:
         - containerPort: 5000
         resources:

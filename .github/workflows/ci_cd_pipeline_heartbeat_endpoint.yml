@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '_2_services/new_heartbeata_endpoint/docker/**'
+      - '_2_services/new_heartbeat_data_endpoint/dockerr/**'
 
 jobs:
   build:
@@ -29,11 +29,11 @@ jobs:
     - name: Build, tag, and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: _2_services/new_heartbeata_endpoint/docker
+        context: _2_services/new_heartbeat_data_endpoint/docker
         push: true
         tags: |
-          fberton98/new_heartbeata_endpoint:test
-          ghcr.io/${{ github.repository }}/new_heartbeata_endpoint:latest
+          fberton98/new_heartbeat_data_endpoint:test
+          ghcr.io/${{ github.repository }}/new_heartbeat_data_endpoint:latest
         platforms: linux/amd64,linux/arm64
         labels: |
           maintainer=fberton98
