@@ -47,15 +47,15 @@ metadata:
   name: new-heartbeat-endpoint-hpa
   namespace: default
 spec:
+  minReplicas: 1
   maxReplicas: 10
   metrics:
-  - resource:
+  - type: Resource
+    resource:
       name: cpu
       target:
-        averageUtilization: 50
+        averageUtilization: 80
         type: Utilization
-    type: Resource
-  minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
