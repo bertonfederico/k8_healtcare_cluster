@@ -2,7 +2,7 @@ name: Dayly test
 
 on:
   schedule:
-    - cron: '10 14 * * *'
+    - cron: '13 12 * * *'
 
 jobs:
   run-tests:
