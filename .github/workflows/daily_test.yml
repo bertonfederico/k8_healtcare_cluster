@@ -1,0 +1,19 @@
+name: Dayly test
+
+on:
+  schedule:
+    - cron: '10 14 * * *'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup ambiente di test
+        run: |
+
+      - name: Esegui i test
+        run: |
