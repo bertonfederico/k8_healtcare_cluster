@@ -8,17 +8,17 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup test environment
-        run: |
-          echo "Setting up the test environment"  # Replace with actual setup commands
-
-      - name: Run tests
-        run: |
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+    - name: Test Deployment
+      env:
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+      run: |
+        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
           # Perform a POST request to http://epilepsy-prediction-service/predict with JSON data
           response=$(curl -k -s -X POST http://epilepsy-prediction-service/predict \
             -H "Content-Type: application/json" \
@@ -54,6 +54,6 @@ jobs:
             echo "POST request failed with HTTP code: $http_code"
             exit 1
           fi
-
           echo "All tests passed"
+        EOF
 
