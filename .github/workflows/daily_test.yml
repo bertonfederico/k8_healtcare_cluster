@@ -19,41 +19,31 @@ jobs:
         SSH_PORT: ${{ secrets.SSH_PORT }}
       run: |
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
-          # Perform a POST request to http://epilepsy-prediction-service/predict with JSON data
+          # Perform a POST request and save the JSON response to a file
           response=$(curl -k -s -X POST http://epilepsy-prediction-service/predict \
             -H "Content-Type: application/json" \
             -d '{"eeg_data": [12,24,3,47,5,69,7,8,1,1,1,1,1,1,1,1,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8]}')
 
-          # Extract HTTP response code
-          http_code=$(echo "$response" | head -n1)
-
-          # Extract JSON response message and response value
+          # Extract the JSON response message and response value
           message=$(echo "$response" | jq -r '.message')
           response_value=$(echo "$response" | jq -r '.response')
 
-          # Check if the HTTP response code is 200
-          if [ "$http_code" -eq 200 ]; then
-            echo "POST request succeeded"
+          # Check if the JSON response message is "Received"
+          if [ "$message" == "Received" ]; then
+            echo "Response message is correct: $message"
             
-            # Check if the JSON response message is "Received"
-            if [ "$message" == "Received" ]; then
-              echo "Response message is correct: $message"
-              
-              # Check if the response value is within an expected range
-              if (( $(echo "$response_value > 0" | bc -l) && $(echo "$response_value < 0.01" | bc -l) )); then
-                echo "Response value is within the expected range: $response_value"
-              else
-                echo "Response value is out of the expected range: $response_value"
-                exit 1
-              fi
+            # Check if the response value is within an expected range
+            if (( $(echo "$response_value > 0" | bc -l) && $(echo "$response_value < 0.01" | bc -l) )); then
+              echo "Response value is within the expected range: $response_value"
             else
-              echo "Response message is incorrect: $message"
+              echo "Response value is out of the expected range: $response_value"
               exit 1
             fi
           else
-            echo "POST request failed with HTTP code: $http_code"
+            echo "Response message is incorrect: $message"
             exit 1
           fi
-          echo "All tests passed"
+
+          echo "All tests passed!"
         EOF
 
