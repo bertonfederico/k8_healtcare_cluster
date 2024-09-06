@@ -20,13 +20,13 @@ jobs:
       run: |
         sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
           # Perform a POST request and save the JSON response to a file
-          response=$(curl -k -s -X POST http://epilepsy-prediction-service/predict \
+          rep=$(curl -k -s -X POST http://epilepsy-prediction-service/predict \
             -H "Content-Type: application/json" \
             -d '{"eeg_data": [12,24,3,47,5,69,7,8,1,1,1,1,1,1,1,1,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8]}')
 
           # Extract the JSON response message and response value
-          message=$(echo "$response" | jq -r '.message')
-          response_value=$(echo "$response" | jq -r '.response')
+          message=$(echo "$rep" | jq -r '.message')
+          response_value=$(echo "$rep" | jq -r '.response')
 
           # Check if the JSON response message is "Received"
           if [ "$message" == "Received" ]; then
