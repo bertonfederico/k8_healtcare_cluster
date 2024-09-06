@@ -1,8 +1,9 @@
-name: Dayly test
+name: Daily test
 
 on:
   schedule:
-    - cron: '13 12 * * *'
+    - cron: '20 12 * * *'  # Esegui ogni giorno alle 12:13 UTC
+  workflow_dispatch:
 
 jobs:
   run-tests:
@@ -14,6 +15,8 @@ jobs:
 
       - name: Setup ambiente di test
         run: |
+          echo "Setup dell'ambiente di test"  # Comandi reali qui
 
       - name: Esegui i test
         run: |
+          echo "Esecuzione dei test"  # Inserisci qui i comandi di test
