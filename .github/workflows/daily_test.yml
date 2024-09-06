@@ -18,33 +18,30 @@ jobs:
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_PORT: ${{ secrets.SSH_PORT }}
       run: |
-        sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST <<EOF
-          # Perform a POST request and save the JSON response to a file
-          rep=$(curl -k -s -X POST http://epilepsy-prediction-service/predict -H "Content-Type: application/json" -d '{"eeg_data": [12,24,3,47,5,69,7,8,1,1,1,1,1,1,1,1,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8]}')
+        response=$(sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST "curl -k -s -X POST http://epilepsy-prediction-service/predict -H 'Content-Type: application/json' -d '{\"eeg_data\": [12,24,3,47,5,69,7,8,1,1,1,1,1,1,1,1,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8]}'")
+        
+        echo "Response from remote VM: $response"
+        
+        echo "$response" > response.json
+    - name: Processa la risposta JSON
+      run: |
+        message=$(cat response.json | jq -r '.message')
+        response_value=$(cat response.json | jq -r '.response')
 
-          # Extract the JSON response message and response value
-          echo "$rep"
-          message=$(echo "$rep" | jq -r '.message')
-          echo "$message"
-          response_value=$(echo "$rep" | jq -r '.response')
-          echo "$response_value"
+        echo "Message: $message"
+        echo "Response value: $response_value"
 
-          # Check if the JSON response message is "Received"
-          if [ "$message" == "Received" ]; then
-            echo "Response message is correct: $message"
-            
-            # Check if the response value is within an expected range
-            if (( $(echo "$response_value > 0" | bc -l) && $(echo "$response_value < 0.01" | bc -l) )); then
-              echo "Response value is within the expected range: $response_value"
-            else
-              echo "Response value is out of the expected range: $response_value"
-              exit 1
-            fi
+        if [ "$message" == "Received" ]; then
+          echo "Response message is correct: $message"
+          
+          if (( $(echo "$response_value > 0" | bc -l) && $(echo "$response_value < 0.01" | bc -l) )); then
+            echo "Response value is within the expected range: $response_value"
           else
-            echo "Response message is incorrect: $message"
+            echo "Response value is out of the expected range: $response_value"
             exit 1
           fi
-
-          echo "All tests passed!"
-        EOF
-
+        else
+          echo "Response message is incorrect: $message"
+          exit 1
+        fi
+        echo "All tests passed!"
