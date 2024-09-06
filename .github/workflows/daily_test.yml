@@ -18,22 +18,29 @@ jobs:
         SSH_HOST: ${{ secrets.SSH_HOST }}
         SSH_PORT: ${{ secrets.SSH_PORT }}
       run: |
+        # Execute the curl command on the VM and capture the JSON response
         response=$(sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST "curl -k -s -X POST http://epilepsy-prediction-service/predict -H 'Content-Type: application/json' -d '{\"eeg_data\": [12,24,3,47,5,69,7,8,1,1,1,1,1,1,1,1,1,1,112,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,812,24,3,47,5,69,7,8]}'")
         
+        # Print the response for debugging
         echo "Response from remote VM: $response"
         
+        # Save the response to a temporary file for further processing
         echo "$response" > response.json
     - name: Processa la risposta JSON
       run: |
+        # Extract the message and response value from the JSON
         message=$(cat response.json | jq -r '.message')
         response_value=$(cat response.json | jq -r '.response')
 
+        # Print the results
         echo "Message: $message"
         echo "Response value: $response_value"
 
+        # Check if the message is correct
         if [ "$message" == "Received" ]; then
           echo "Response message is correct: $message"
           
+          # Check if the response value is within the expected range
           if (( $(echo "$response_value > 0" | bc -l) && $(echo "$response_value < 0.01" | bc -l) )); then
             echo "Response value is within the expected range: $response_value"
           else
@@ -44,4 +51,4 @@ jobs:
           echo "Response message is incorrect: $message"
           exit 1
         fi
-        echo "All tests passed!"
+        echo "All tests passed"
