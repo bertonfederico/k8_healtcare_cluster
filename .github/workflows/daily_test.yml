@@ -24,15 +24,11 @@ jobs:
         # Print the response for debugging
         echo "Response from remote VM: $response"
         
-        # Save the response to a temporary file for further processing
-        echo "$response" > response.json
-    - name: Processa la risposta JSON
-      run: |
-        # Extract the message and response value from the JSON
-        message=$(cat response.json | jq -r '.message')
-        response_value=$(cat response.json | jq -r '.response')
+        # Extract the message and response value directly from the JSON response
+        message=$(echo "$response" | jq -r '.message')
+        response_value=$(echo "$response" | jq -r '.response')
 
-        # Print the results
+        # Print the extracted values
         echo "Message: $message"
         echo "Response value: $response_value"
 
