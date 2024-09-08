@@ -80,8 +80,7 @@ The file requirements.txt contains the dependencies that such a service needs. F
 docker build -t fberton98/new_eeg_data_endpoint:latest .
 docker push fberton98/new_eeg_data_endpoint:latest
 ```
-
-The resulting Docker images were then published on DockerHub, making them accessible for distribution across various platforms and environments. This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
+This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
 
 
 ### GitHub Actions
@@ -248,6 +247,77 @@ spec:
 4.	Edit the /etc/hosts file of your operating system to associate the domain with a specific IP address of Ingress Controller.
 <img src="https://github.com/user-attachments/assets/1a2ad603-c775-41eb-a3c9-a830e51cb72e" alt="def" height="150">
 
+<br><br><br>
+## 💎 Markovian analysis of servents number
+
+The Markov queuing model can be considered an effective tool for determining the optimal number of pods in a Kubernetes cluster because of its ability to model complex systems operating under varying loads. The M/M/m/m model of queuing theory assumes that arrival processes follow a Poisson distribution, that service times are exponentially distributed, and that there is a fixed number of servers (m) with no possibility of accommodating excess requests beyond the system's capacity (m), i.e., no queuing. Since the Kubernetes cluster in question rejects or uses a very short time-out in case there is a request in case, it makes sense to approximate it as M/M/m/m.
+
+Using that model, one can calculate the offered traffic, defined as the product of the request arrival rate and the average service time, and then apply Erlang's formula B to determine the ideal number of servers. Although the HPA automates pod management, it is important to set a maximum pod limit to avoid excessive requests and high costs, and this can be approximated through the Markovian approach.
+
+Because a feed-forward queueing system is used, in which requests move in a direct flow through the various services without feedback, Burke's theorem ensures that the outflow of arrivals from each servant follows a Poisson distribution, thus allowing each service to be treated as independent of the others. Consequently, for each service, it is essential to analyze the frequency of request arrival and service time separately, and then determine the blocking probability as a function of the number of available servants. Alternatively, a preliminary analysis can be conducted on request volumes and average response times to determine the optimal number of servants to ensure a desired blocking probability. This process can be accomplished as follows:
+- Establish, for such ti test phase, a fixed number of service pods to be analyzed.
+- Perform a preliminary analysis of the request arrival rate (λ), including failed or rejected attempts. This monitoring can be accomplished using tools such as Prometheus, which allows you to collect metrics in real time, or through an Ingress log analysis. To enable the latter mode, it is necessary to properly configure the annotation in the Ingress, enabling the recording of request details in the log file:
+  ```yaml
+  ...
+    metadata:
+      name: my-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/enable-access-log: "true"
+  ...
+  ```
+  From the analysis of the collected logs or metrics, it is possible to estimate the total number of requests that affected a particular path (in the example below, “/my-path”):
+  ```sh
+  kubectl logs <nginx-ingress-controller-pod> -n <namespace> --since=1h | grep "/my-path" | wc -l
+  ```
+- Determine the service time (T_s) required by each servant to complete a single request. This value can be approximated by entering appropriate logs in the service code itself. For example, you can log the start and end time of each request and calculate the difference between the two times, as in the following example in Python:
+  ```py
+    # Variables to store total time and request count
+    total_time = 0
+    request_count = 0
+    
+    # File to store the average response time
+    log_file = 'response_times.log'
+    
+    @app.route('/my-endpoint', methods=['GET'])
+    def handle_request():
+        global total_time, request_count
+    
+        start_time = time.time()  # Start time
+        
+        .........
+        
+        end_time = time.time()  # End time
+    
+        # Calculate the duration of the request handling
+        total_time += (end_time - start_time)
+        request_count += 1
+    
+        # Calculate the average response time
+        if request_count > 0:
+            average_response_time = total_time / request_count
+        else:
+            average_response_time = 0
+         
+    
+        # Log the average response time to a file
+        with open(log_file, 'a') as f:
+            f.write(f"Av resp time:{average_response_time:.4f} sec\n")
+    
+        return response
+  ```
+- Define the out-of-service probability (P_B), which represents the percentage of requests that the system rejects once the maximum available servant capacity is reached. This blocking probability should be determined based on the quality requirements for the application.
+- To determine the optimal number of servants, apply Erlang's principle B, given below:
+  
+    $$
+    B(n, A) = \frac{\frac{A^n}{n!}}{\sum_{k=0}^{n} \frac{A^k}{k!}}
+    $$
+  
+  This principle allows the optimal number of servants to be calculated as a function of the desired blocking probability, frequency of request arrival, and service time. Direct calculation can be complex, so the Erlang B formula is often inverted using computational software or iterative attempts with different numbers of servers to obtain the desired blocking probability.
+
+This methodology makes it possible to accurately estimate the optimal number of pods needed to ensure an adequate level of service, taking into account the average number of incoming requests and the desired blocking probability.
+
+
+<br><br><br>
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality. In detail, the automated process encompasses updating Docker images, running unit tests in locally, creating temporary test Deployments and Services, and finally updating the Deployments and Services in production. This continuous integration and deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
 
