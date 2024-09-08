@@ -80,8 +80,7 @@ The file requirements.txt contains the dependencies that such a service needs. F
 docker build -t fberton98/new_eeg_data_endpoint:latest .
 docker push fberton98/new_eeg_data_endpoint:latest
 ```
-
-The resulting Docker images were then published on DockerHub, making them accessible for distribution across various platforms and environments. This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
+This approach not only ensures that the services are encapsulated in an isolated and reproducible environment but also streamlines the development, integration, and continuous deployment cycle, fostering a reliable and scalable release pipeline.
 
 
 ### GitHub Actions
