@@ -272,7 +272,7 @@ Because a feed-forward queueing system is used, in which requests move in a dire
   ```
 - Determine the service time (T_s) required by each servant to complete a single request. This value can be approximated by entering appropriate logs in the service code itself. For example, you can log the start and end time of each request and calculate the difference between the two times, as in the following example in Python:
   ```py
-  # Variables to store total time and request count
+    # Variables to store total time and request count
     total_time = 0
     request_count = 0
     
@@ -318,8 +318,7 @@ Because a feed-forward queueing system is used, in which requests move in a dire
 This methodology makes it possible to accurately estimate the optimal number of pods needed to ensure an adequate level of service, taking into account the average number of incoming requests and the desired blocking probability.
 
 
-
-
+<br><br><br>
 ## 🚀 DevOps automation
 Through the implementation of an automated pipeline based on GitHub Actions, a structured process for the continuous lifecycle management of software services has been implemented. This automated mechanism is triggered by commits or pushes made to the repository, ensuring a series of sequential operations that are critical to maintaining software quality. In detail, the automated process encompasses updating Docker images, running unit tests in locally, creating temporary test Deployments and Services, and finally updating the Deployments and Services in production. This continuous integration and deployment (CI/CD) mode not only optimizes workflow, but also ensures a safe and reliable software release cycle, minimizing the risk of introducing errors into production versions.
 
