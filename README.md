@@ -248,6 +248,7 @@ spec:
 4.	Edit the /etc/hosts file of your operating system to associate the domain with a specific IP address of Ingress Controller.
 <img src="https://github.com/user-attachments/assets/1a2ad603-c775-41eb-a3c9-a830e51cb72e" alt="def" height="150">
 
+<br><br><br>
 ## 💎 Markovian analysis of servents number
 
 The Markov queuing model can be considered an effective tool for determining the optimal number of pods in a Kubernetes cluster because of its ability to model complex systems operating under varying loads. The M/M/m/m model of queuing theory assumes that arrival processes follow a Poisson distribution, that service times are exponentially distributed, and that there is a fixed number of servers (m) with no possibility of accommodating excess requests beyond the system's capacity (m), i.e., no queuing. Since the Kubernetes cluster in question rejects or uses a very short time-out in case there is a request in case, it makes sense to approximate it as M/M/m/m.
